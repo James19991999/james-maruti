@@ -1,0 +1,69 @@
+import { NextRequest, NextResponse } from "next/server";
+import { FieldValue } from "firebase-admin/firestore";
+import { getAdminDb } from "@/lib/firebase-admin";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { sendNewsletterConfirmation } from "@/lib/notifications";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export async function POST(request: NextRequest) {
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
+
+  const { email, website } = (body ?? {}) as Record<string, unknown>;
+
+  // Honeypot — see app/api/contact/route.ts for the same pattern.
+  if (typeof website === "string" && website.trim().length > 0) {
+    return NextResponse.json({ ok: true }, { status: 201 });
+  }
+
+  if (typeof email !== "string" || !EMAIL_RE.test(email)) {
+    return NextResponse.json({ error: "Please provide a valid email address." }, { status: 400 });
+  }
+
+  try {
+    const ip = getClientIp(request);
+    const { allowed, retryAfterSeconds } = await checkRateLimit(ip, "newsletter");
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Too many attempts. Please try again in a few minutes." },
+        { status: 429, headers: retryAfterSeconds ? { "Retry-After": String(retryAfterSeconds) } : undefined }
+      );
+    }
+  } catch (error) {
+    console.error("Rate limit check failed, proceeding without it:", error);
+  }
+
+  try {
+    const db = getAdminDb();
+    // Use the email as the document ID to make repeat sign-ups idempotent.
+    await db
+      .collection("newsletter_subscribers")
+      .doc(email.trim().toLowerCase())
+      .set(
+        {
+          email: email.trim().toLowerCase(),
+          subscribedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+    try {
+      await sendNewsletterConfirmation(email.trim().toLowerCase());
+    } catch (error) {
+      console.error("Failed to send newsletter confirmation email:", error);
+    }
+
+    return NextResponse.json({ ok: true }, { status: 201 });
+  } catch (error) {
+    console.error("Failed to save newsletter subscriber:", error);
+    return NextResponse.json(
+      { error: "Something went wrong on our end. Please try again shortly." },
+      { status: 500 }
+    );
+  }
+}
