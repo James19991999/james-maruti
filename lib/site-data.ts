@@ -23,7 +23,7 @@ export const personSchema = {
     addressLocality: "Nairobi",
     addressCountry: "KE",
   },
-  image: `${siteConfig.url}/images/profile.png`,
+  image: "https://jamesmaruti.site/wp-content/uploads/2025/12/jymoo.jpg",
   sameAs: [siteConfig.linkedin, siteConfig.github],
   alumniOf: {
     "@type": "CollegeOrUniversity",
@@ -367,23 +367,23 @@ export const homePhilosophy = {
 
 export const images = {
   heroPortrait: {
-    src: "/images/profile.png",
-    alt: "James Maruti outdoors in a black bucket hat, glasses, striped shirt, black puffer vest, and white sneakers.",
+    src: "https://jamesmaruti.site/wp-content/uploads/2025/12/jymoo.jpg",
+    alt: "James Maruti in a black cap, striped shirt, and puffer vest, standing outdoors.",
   },
   aboutPortrait: {
-    src: "/images/profile.png",
-    alt: "James Maruti outdoors in a black bucket hat, glasses, striped shirt, black puffer vest, and white sneakers.",
+    src: "https://jamesmaruti.site/wp-content/uploads/2025/12/jymoo.jpg",
+    alt: "James Maruti in a black cap, striped shirt, and puffer vest, standing outdoors.",
   },
   signInPortrait: {
-    src: "/images/profile.png",
-    alt: "James Maruti outdoors in a black bucket hat, glasses, striped shirt, black puffer vest, and white sneakers.",
+    src: "https://jamesmaruti.site/wp-content/uploads/2025/12/jymoo.jpg",
+    alt: "James Maruti in a black cap, striped shirt, and puffer vest, standing outdoors.",
   },
   termsPortrait: {
     src: "https://lh3.googleusercontent.com/aida-public/AB6AXuBenrgxkwdeDKu50FGLp8IFjSsDXEOQEjQ26PKqgYW2XgqA5TieilTqVTaPKr_Pb7D_6cmypjHKis3x2pKH_cF9IUepCsDlXU3Lef_QXZKK98iPo-Y9qf7Zl-RATxbYgUWM7mf1mrzk-ZHGWEKR4kbnHub9kcE6Xl4bZheD6Gd39QBF7NTzJV-lgYSLzqSQryR3lmRIdJfRBX4i3tl9CGiK-zt2nhBK5nJAk0YOyuv8EStFDqriPdRK7Ds8EgpfqbAGkoqyL_Tmd94",
     alt: "Architectural workspace representing the Maruti digital ecosystem.",
   },
   settingsAvatar: {
-    src: "/images/profile.png",
+    src: "https://jamesmaruti.site/wp-content/uploads/2025/11/JAMMEES.png",
     alt: "James Maruti profile photo.",
   },
 };
