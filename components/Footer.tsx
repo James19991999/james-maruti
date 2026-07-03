@@ -1,6 +1,8 @@
 import Link from "next/link";
-import NewsletterForm from "./NewsletterForm";
+import dynamic from "next/dynamic";
 import { footerLinks, legalFooterLinks } from "@/lib/site-data";
+
+const NewsletterForm = dynamic(() => import("./NewsletterForm"));
 
 export default function Footer() {
   return (

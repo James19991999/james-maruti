@@ -1,11 +1,13 @@
 import Link from "next/link";
-import MobileMenu from "./MobileMenu";
+import dynamic from "next/dynamic";
 import { mainNavLinks } from "@/lib/site-data";
+
+const MobileMenu = dynamic(() => import("./MobileMenu"), { ssr: false });
 
 export default function TopNavBar() {
   return (
     <nav
-      className="fixed top-0 w-full z-50 bg-surface/70 backdrop-blur-md shadow-sm"
+      className="fixed top-0 w-full z-50 bg-surface/95 shadow-sm"
       aria-label="Primary"
     >
       <div className="flex justify-between items-center px-gutter md:px-margin-desktop py-4 max-w-full mx-auto">

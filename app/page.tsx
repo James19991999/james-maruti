@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 import FeatureCard from "@/components/FeatureCard";
 import ProjectCard from "@/components/ProjectCard";
-import ContactForm from "@/components/ContactForm";
 import { createPageMetadata } from "@/lib/seo";
 import {
   expertiseDomains,
@@ -14,6 +14,12 @@ import {
   images,
   siteConfig,
 } from "@/lib/site-data";
+
+const ContactForm = dynamic(() => import("@/components/ContactForm"), {
+  loading: () => (
+    <div className="h-64 animate-pulse rounded-xl bg-surface-container-high" aria-hidden="true" />
+  ),
+});
 
 export const metadata = createPageMetadata({
   title: siteConfig.title,
@@ -27,7 +33,7 @@ export default function HomePage() {
       <TopNavBar />
       <main className="pt-24 overflow-x-hidden">
         {/* Hero Section */}
-        <section className="min-h-[819px] flex flex-col justify-center px-gutter md:px-margin-desktop py-section-gap">
+        <section className="min-h-[calc(100dvh-6rem)] flex flex-col justify-center px-gutter md:px-margin-desktop py-section-gap">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-16 items-center max-w-7xl mx-auto w-full">
             <div>
               <div className="inline-flex items-center gap-2 mb-6 bg-primary-fixed px-3 py-1 rounded-full">

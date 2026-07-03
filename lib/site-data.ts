@@ -27,7 +27,7 @@ export const personSchema = {
     addressLocality: "Nairobi",
     addressCountry: "KE",
   },
-  image: "https://jamesmaruti.site/wp-content/uploads/2025/12/jymoo.jpg",
+  image: `${siteConfig.url}/images/jymoo.jpg`,
   sameAs: [siteConfig.linkedin, siteConfig.github],
   alumniOf: {
     "@type": "CollegeOrUniversity",
@@ -438,15 +438,15 @@ export const homePhilosophy = {
 
 export const images = {
   heroPortrait: {
-    src: "https://jamesmaruti.site/wp-content/uploads/2025/12/jymoo.jpg",
+    src: "/images/jymoo.jpg",
     alt: "James Maruti in a black cap, striped shirt, and puffer vest, standing outdoors.",
   },
   aboutPortrait: {
-    src: "https://jamesmaruti.site/wp-content/uploads/2025/12/jymoo.jpg",
+    src: "/images/jymoo.jpg",
     alt: "James Maruti in a black cap, striped shirt, and puffer vest, standing outdoors.",
   },
   signInPortrait: {
-    src: "https://jamesmaruti.site/wp-content/uploads/2025/12/jymoo.jpg",
+    src: "/images/jymoo.jpg",
     alt: "James Maruti in a black cap, striped shirt, and puffer vest, standing outdoors.",
   },
   termsPortrait: {
@@ -454,7 +454,7 @@ export const images = {
     alt: "Architectural workspace representing the Maruti digital ecosystem.",
   },
   settingsAvatar: {
-    src: "https://jamesmaruti.site/wp-content/uploads/2025/11/JAMMEES.png",
+    src: "/images/jammees.png",
     alt: "James Maruti profile photo.",
   },
 };

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Libre_Caslon_Text, Manrope, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { siteConfig, structuredData } from "@/lib/site-data";
-import { AuthProvider } from "@/lib/auth-context";
+import MaterialSymbolsLoader from "@/components/MaterialSymbolsLoader";
 
 const libreCaslonText = Libre_Caslon_Text({
   subsets: ["latin"],
@@ -97,15 +97,8 @@ export default function RootLayout({
       className={`scroll-smooth ${libreCaslonText.variable} ${manrope.variable} ${jetbrainsMono.variable}`}
     >
       <head>
-        {/* Material Symbols Outlined uses variable icon axes (FILL/GRAD/opsz) that
-            next/font/google's simplified weight-only API can't express, so it stays
-            on a <link> tag rather than being self-hosted like the text fonts above. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-          rel="stylesheet"
-        />
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
@@ -113,7 +106,8 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body-md text-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
-        <AuthProvider>{children}</AuthProvider>
+        <MaterialSymbolsLoader />
+        {children}
       </body>
     </html>
   );
