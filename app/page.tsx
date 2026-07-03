@@ -159,7 +159,7 @@ export default function HomePage() {
             <div className="relative">
               <div className="aspect-square bg-surface-container-highest rounded-lg overflow-hidden border-8 border-white/10">
                 <Image
-                  className="w-full h-full object-cover grayscale contrast-125"
+                  className="w-full h-full object-cover object-top"
                   src={images.aboutPortrait.src}
                   alt={images.aboutPortrait.alt}
                   width={800}

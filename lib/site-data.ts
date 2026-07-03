@@ -368,15 +368,15 @@ export const homePhilosophy = {
 export const images = {
   heroPortrait: {
     src: "/images/profile.png",
-    alt: "James Maruti standing outdoors in a black bucket hat, glasses, striped shirt, and puffer vest.",
+    alt: "James Maruti outdoors in a black bucket hat, glasses, striped shirt, black puffer vest, and white sneakers.",
   },
   aboutPortrait: {
     src: "/images/profile.png",
-    alt: "James Maruti standing outdoors in a black bucket hat, glasses, striped shirt, and puffer vest.",
+    alt: "James Maruti outdoors in a black bucket hat, glasses, striped shirt, black puffer vest, and white sneakers.",
   },
   signInPortrait: {
     src: "/images/profile.png",
-    alt: "James Maruti standing outdoors in a black bucket hat, glasses, striped shirt, and puffer vest.",
+    alt: "James Maruti outdoors in a black bucket hat, glasses, striped shirt, black puffer vest, and white sneakers.",
   },
   termsPortrait: {
     src: "https://lh3.googleusercontent.com/aida-public/AB6AXuBenrgxkwdeDKu50FGLp8IFjSsDXEOQEjQ26PKqgYW2XgqA5TieilTqVTaPKr_Pb7D_6cmypjHKis3x2pKH_cF9IUepCsDlXU3Lef_QXZKK98iPo-Y9qf7Zl-RATxbYgUWM7mf1mrzk-ZHGWEKR4kbnHub9kcE6Xl4bZheD6Gd39QBF7NTzJV-lgYSLzqSQryR3lmRIdJfRBX4i3tl9CGiK-zt2nhBK5nJAk0YOyuv8EStFDqriPdRK7Ds8EgpfqbAGkoqyL_Tmd94",
