@@ -27,52 +27,53 @@ export default function HomePage() {
       <TopNavBar />
       <main className="pt-24 overflow-x-hidden">
         {/* Hero Section */}
-        <section className="min-h-[819px] flex flex-col justify-center px-gutter md:px-margin-desktop relative">
-          <div className="max-w-5xl">
-            <div className="inline-flex items-center gap-2 mb-6 bg-primary-fixed px-3 py-1 rounded-full">
-              <span
-                className="material-symbols-outlined text-primary text-sm"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-                aria-hidden="true"
-              >
-                verified
-              </span>
-              <span className="font-label-mono text-[11px] text-on-primary-fixed tracking-widest uppercase">
-                Verified Professional Architect
-              </span>
+        <section className="min-h-[819px] flex flex-col justify-center px-gutter md:px-margin-desktop py-section-gap">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-16 items-center max-w-7xl mx-auto w-full">
+            <div>
+              <div className="inline-flex items-center gap-2 mb-6 bg-primary-fixed px-3 py-1 rounded-full">
+                <span
+                  className="material-symbols-outlined text-primary text-sm"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                  aria-hidden="true"
+                >
+                  verified
+                </span>
+                <span className="font-label-mono text-[11px] text-on-primary-fixed tracking-widest uppercase">
+                  Verified Professional Architect
+                </span>
+              </div>
+              <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-6 leading-tight">
+                James Maruti. <br />
+                <span className="text-secondary italic font-light">
+                  Architecting Scalable Systems.
+                </span>
+              </h1>
+              <p className="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-2xl">
+                Designing for Human Psychology. Helping Ventures Scale with Clean Code &amp;
+                Advanced SEO.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  href="/expertise"
+                  className="bg-primary text-on-primary px-8 py-4 rounded font-label-mono text-label-mono text-center hover:bg-primary-container transition-all"
+                >
+                  View Expertise
+                </Link>
+                <Link
+                  href="/contact"
+                  className="border border-secondary text-secondary px-8 py-4 rounded font-label-mono text-label-mono text-center hover:bg-secondary-container/10 transition-all"
+                >
+                  Contact Me
+                </Link>
+              </div>
             </div>
-            <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-6 leading-tight">
-              James Maruti. <br />
-              <span className="text-secondary italic font-light">
-                Architecting Scalable Systems.
-              </span>
-            </h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-2xl">
-              Designing for Human Psychology. Helping Ventures Scale with Clean Code &amp;
-              Advanced SEO.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                href="/expertise"
-                className="bg-primary text-on-primary px-8 py-4 rounded font-label-mono text-label-mono text-center hover:bg-primary-container transition-all"
-              >
-                View Expertise
-              </Link>
-              <Link
-                href="/contact"
-                className="border border-secondary text-secondary px-8 py-4 rounded font-label-mono text-label-mono text-center hover:bg-secondary-container/10 transition-all"
-              >
-                Contact Me
-              </Link>
-            </div>
-          </div>
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden lg:block">
-            <div className="relative w-[380px] h-[480px] rounded-lg overflow-hidden border-8 border-primary/10 shadow-2xl">
+
+            <div className="relative w-full max-w-xs sm:max-w-sm lg:w-[420px] lg:max-w-none aspect-[4/5] rounded-lg overflow-hidden border-8 border-primary/10 shadow-2xl mx-auto lg:mx-0 shrink-0">
               <Image
                 src={images.heroPortrait.src}
                 alt={images.heroPortrait.alt}
                 fill
-                sizes="380px"
+                sizes="(min-width: 1024px) 420px, (min-width: 640px) 384px, 320px"
                 className="object-cover object-top"
                 priority
               />
