@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import SignInForm from "@/components/SignInForm";
 import AuthBrandingPortrait from "@/components/AuthBrandingPortrait";

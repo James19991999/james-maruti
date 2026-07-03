@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 import { createPageMetadata } from "@/lib/seo";
