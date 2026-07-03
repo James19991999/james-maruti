@@ -1,8 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
-import { foundationalValues, journeyMilestones, philosophyPillars, siteConfig } from "@/lib/site-data";
+import { foundationalValues, images, journeyMilestones, philosophyPillars, siteConfig } from "@/lib/site-data";
 
 export const metadata: Metadata = {
   title: "About",
@@ -18,18 +19,32 @@ export default function AboutPage() {
       <main className="pt-24 overflow-x-hidden">
         {/* Header */}
         <section className="px-gutter md:px-margin-desktop py-section-gap">
-          <span className="font-label-mono text-label-mono text-secondary tracking-widest uppercase">
-            The Architect&apos;s Origin
-          </span>
-          <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg text-primary mt-2 mb-6 leading-tight max-w-4xl">
-            The Architect Behind <br />
-            <span className="text-secondary italic font-light">The Systems.</span>
-          </h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-            Specializing at the critical intersection of media psychology and technical
-            precision. I don&apos;t just build applications; I architect digital ecosystems that
-            resonate with human cognition while maintaining rigorous code integrity.
-          </p>
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 items-start">
+            <div>
+              <span className="font-label-mono text-label-mono text-secondary tracking-widest uppercase">
+                The Architect&apos;s Origin
+              </span>
+              <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg text-primary mt-2 mb-6 leading-tight max-w-4xl">
+                The Architect Behind <br />
+                <span className="text-secondary italic font-light">The Systems.</span>
+              </h1>
+              <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                Specializing at the critical intersection of media psychology and technical
+                precision. I don&apos;t just build applications; I architect digital ecosystems that
+                resonate with human cognition while maintaining rigorous code integrity.
+              </p>
+            </div>
+            <div className="relative w-56 h-72 lg:w-64 lg:h-80 rounded-lg overflow-hidden border-8 border-primary/10 shrink-0 mx-auto lg:mx-0">
+              <Image
+                src={images.heroPortrait.src}
+                alt={images.heroPortrait.alt}
+                fill
+                sizes="(min-width: 1024px) 256px, 224px"
+                className="object-cover object-top"
+                priority
+              />
+            </div>
+          </div>
         </section>
 
         {/* Bridging Rigor & Psychology */}

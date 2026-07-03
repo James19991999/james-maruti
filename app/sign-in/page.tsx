@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import SignInForm from "@/components/SignInForm";
+import AuthBrandingPortrait from "@/components/AuthBrandingPortrait";
 
 export const metadata: Metadata = {
   title: "Sign In",
@@ -28,6 +29,7 @@ export default function SignInPage() {
             Building the digital architecture of the future. Secure access to a workspace where
             media psychology meets high-fidelity software engineering.
           </p>
+          <AuthBrandingPortrait />
         </div>
         <div className="flex gap-8">
           <div>

@@ -66,11 +66,17 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          <div
-            className="absolute right-0 top-1/2 -translate-y-1/2 opacity-10 pointer-events-none hidden lg:block"
-            aria-hidden="true"
-          >
-            <div className="w-[500px] h-[500px] border border-primary rounded-full animate-pulse" />
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden lg:block">
+            <div className="relative w-[380px] h-[480px] rounded-lg overflow-hidden border-8 border-primary/10 shadow-2xl">
+              <Image
+                src={images.heroPortrait.src}
+                alt={images.heroPortrait.alt}
+                fill
+                sizes="380px"
+                className="object-cover object-top"
+                priority
+              />
+            </div>
           </div>
         </section>
 

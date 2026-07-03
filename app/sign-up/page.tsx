@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import SignUpForm from "@/components/SignUpForm";
+import AuthBrandingPortrait from "@/components/AuthBrandingPortrait";
 
 export const metadata: Metadata = {
   title: "Create Account",
@@ -28,6 +29,7 @@ export default function SignUpPage() {
             &ldquo;The transition from simple code to scalable architecture requires a partner
             who understands both the logic of machines and the psychology of users.&rdquo;
           </blockquote>
+          <AuthBrandingPortrait />
         </div>
         <div className="flex gap-8">
           <div>

@@ -23,6 +23,7 @@ export const personSchema = {
     addressLocality: "Nairobi",
     addressCountry: "KE",
   },
+  image: `${siteConfig.url}/images/profile.png`,
   sameAs: [siteConfig.linkedin, siteConfig.github],
   alumniOf: {
     "@type": "CollegeOrUniversity",
@@ -366,23 +367,23 @@ export const homePhilosophy = {
 
 export const images = {
   heroPortrait: {
-    src: "https://jamesmaruti.site/wp-content/uploads/2026/01/JAMES-MARUTI.2.png",
-    alt: "A professional studio portrait of James Maruti, a modern technical professional, dressed in business casual attire, looking directly at the camera with a confident and approachable expression.",
+    src: "/images/profile.png",
+    alt: "James Maruti standing outdoors in a black bucket hat, glasses, striped shirt, and puffer vest.",
   },
   aboutPortrait: {
-    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuD77hXyMS8XGe_VQZyea4JUndbiBAbVxbpANSVm29im1QVu3sjB6pxSOJRO8X0y7u8azLpZI1ydIzr1GiBH-K4aeCF32vvhUvZEltTTTjlONNFboPv5eKHfZbDqShdJr1eP9jKfEgby1XXcdqdNHTJ8PThTmYdBtC4_LGlwwvoXUYf8VS-_EdotvY8OiLwSRqyeNGQbh6k8lsXwKcb8XA0uA4F9jM7atp_pMcsklbZRrE0CXgncM4MMJpX-FhleVChscgQiuN7TY3M",
-    alt: "James Maruti, UI architect and digital strategist, professional portrait.",
+    src: "/images/profile.png",
+    alt: "James Maruti standing outdoors in a black bucket hat, glasses, striped shirt, and puffer vest.",
   },
   signInPortrait: {
-    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuBwDbmMgWhBD1QoWVaWpxPqOVpX7j2ZTc_tU_dJUelD6FJ2y9zeOD6NQAmHaDXMJao6gQarrBYimlshXpMwG80og2RIc98mjKR2uJm7RJp9UWKfYPbTFdcVPuysCC4H5vIICJNnOjK59uIeHjwnfKqZsicgPvXLL8U8CPbqyG5CBRj4I-o7alvVTSlcIPDnbj97d8amlWA8MhhxS1n1a7Hm3N5AxnYuu-PUr2nI0qNYoKoe1OLGBo3GfPTzVHzKuUwbJ1-or03tLzg",
-    alt: "Architectural workspace representing the Maruti digital ecosystem.",
+    src: "/images/profile.png",
+    alt: "James Maruti standing outdoors in a black bucket hat, glasses, striped shirt, and puffer vest.",
   },
   termsPortrait: {
     src: "https://lh3.googleusercontent.com/aida-public/AB6AXuBenrgxkwdeDKu50FGLp8IFjSsDXEOQEjQ26PKqgYW2XgqA5TieilTqVTaPKr_Pb7D_6cmypjHKis3x2pKH_cF9IUepCsDlXU3Lef_QXZKK98iPo-Y9qf7Zl-RATxbYgUWM7mf1mrzk-ZHGWEKR4kbnHub9kcE6Xl4bZheD6Gd39QBF7NTzJV-lgYSLzqSQryR3lmRIdJfRBX4i3tl9CGiK-zt2nhBK5nJAk0YOyuv8EStFDqriPdRK7Ds8EgpfqbAGkoqyL_Tmd94",
     alt: "Architectural workspace representing the Maruti digital ecosystem.",
   },
   settingsAvatar: {
-    src: "https://jamesmaruti.site/wp-content/uploads/2025/11/JAMMEES.png",
+    src: "/images/profile.png",
     alt: "James Maruti profile photo.",
   },
 };
