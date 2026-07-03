@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
+import { createPageMetadata } from "@/lib/seo";
 import { almaMater, experienceEntries, siteConfig } from "@/lib/site-data";
 
-export const metadata: Metadata = {
-  title: "Experience",
+export const metadata = createPageMetadata({
+  title: "Experience | Web Design & Development Career",
   description:
-    "A timeline of James Maruti architecting digital ecosystems, driving growth, and bridging technical rigor with human experience.",
-  alternates: { canonical: "/experience" },
-};
+    "James Maruti's professional timeline: JG Creative Tech Solution, freelance design, and digital architecture work across Nairobi and Kenya.",
+  path: "/experience",
+});
 
 export default function ExperiencePage() {
   return (

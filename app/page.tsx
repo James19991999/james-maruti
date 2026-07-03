@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Metadata } from "next";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 import FeatureCard from "@/components/FeatureCard";
 import ProjectCard from "@/components/ProjectCard";
 import ContactForm from "@/components/ContactForm";
+import { createPageMetadata } from "@/lib/seo";
 import {
   expertiseDomains,
   featuredProjects,
@@ -15,11 +15,11 @@ import {
   siteConfig,
 } from "@/lib/site-data";
 
-export const metadata: Metadata = {
-  title: "James Maruti | Architecting Scalable Systems",
+export const metadata = createPageMetadata({
+  title: siteConfig.title,
   description: siteConfig.description,
-  alternates: { canonical: "/" },
-};
+  path: "",
+});
 
 export default function HomePage() {
   return (

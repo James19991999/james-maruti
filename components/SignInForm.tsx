@@ -96,7 +96,7 @@ export default function SignInForm() {
 
   return (
     <div>
-      <h1 className="font-headline-md text-headline-md text-primary mb-2">Sign In</h1>
+      <h2 className="font-headline-md text-headline-md text-primary mb-2">Sign In</h2>
       <p className="text-on-surface-variant mb-8">
         Welcome back. Please enter your credentials to continue to the platform.
       </p>

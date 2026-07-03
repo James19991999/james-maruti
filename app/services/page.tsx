@@ -3,18 +3,26 @@ import type { Metadata } from "next";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 import FeatureCard from "@/components/FeatureCard";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbSchema, createPageMetadata } from "@/lib/seo";
 import { serviceMethodologySteps, serviceStack, services } from "@/lib/site-data";
 
-export const metadata: Metadata = {
-  title: "Services",
+export const metadata = createPageMetadata({
+  title: "Services | Next.js Development, UI/UX & SEO",
   description:
-    "Specialized services from James Maruti: scalable web architecture, psychological UI/UX design, and entity-first technical SEO.",
-  alternates: { canonical: "/services" },
-};
+    "Hire James Maruti for scalable web architecture, psychological UI/UX design, and entity-first technical SEO in Nairobi, Kenya.",
+  path: "/services",
+});
 
 export default function ServicesPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "" },
+          { name: "Services", path: "/services" },
+        ])}
+      />
       <TopNavBar />
       <main className="pt-24 overflow-x-hidden">
         <section className="px-gutter md:px-margin-desktop py-section-gap">

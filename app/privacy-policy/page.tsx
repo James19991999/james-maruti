@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 
-export const metadata: Metadata = {
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
   title: "Privacy Policy",
   description: "How James Maruti collects, uses, and protects your personal data.",
-  alternates: { canonical: "/privacy-policy" },
-  robots: { index: true, follow: true },
-};
+  path: "/privacy-policy",
+});
 
 const sections = [
   {

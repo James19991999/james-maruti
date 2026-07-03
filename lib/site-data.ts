@@ -1,8 +1,8 @@
 export const siteConfig = {
   name: "James Maruti",
-  title: "James Maruti | UI Architect & Digital Strategist",
+  title: "James Maruti | Next.js Developer & UI Architect — Nairobi, Kenya",
   description:
-    "James Maruti architects scalable Next.js systems and media-psychology-driven UI/UX for high-growth ventures. Technical rigor meets human insight.",
+    "James Maruti is a Nairobi-based UI architect and Next.js developer building scalable web systems, psychological UX design, and entity-first technical SEO for high-growth ventures.",
   url: "https://jamesmaruti.site",
   email: "jamesmaruti560@gmail.com",
   location: "Nairobi, Kenya",
@@ -11,13 +11,17 @@ export const siteConfig = {
   cvUrl: "/documents/james-maruti-cv.pdf",
 };
 
+const personId = `${siteConfig.url}/#person`;
+const websiteId = `${siteConfig.url}/#website`;
+
 export const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
+  "@id": personId,
   name: siteConfig.name,
   url: siteConfig.url,
   jobTitle: "UI Architect & Digital Strategist",
-  email: `mailto:${siteConfig.email}`,
+  email: siteConfig.email,
   address: {
     "@type": "PostalAddress",
     addressLocality: "Nairobi",
@@ -37,6 +41,8 @@ export const personSchema = {
     "Media Psychology",
     "Technical SEO",
     "Entity-First SEO",
+    "Web Development",
+    "Nairobi Kenya",
   ],
 };
 
@@ -118,6 +124,71 @@ export const featuredProjects = [
     external: true,
   },
 ];
+
+export const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": websiteId,
+      url: siteConfig.url,
+      name: siteConfig.name,
+      description: siteConfig.description,
+      inLanguage: "en-US",
+      publisher: { "@id": personId },
+    },
+    {
+      "@type": "Person",
+      "@id": personId,
+      name: siteConfig.name,
+      url: siteConfig.url,
+      jobTitle: "UI Architect & Digital Strategist",
+      email: siteConfig.email,
+      address: personSchema.address,
+      image: personSchema.image,
+      sameAs: personSchema.sameAs,
+      alumniOf: personSchema.alumniOf,
+      knowsAbout: personSchema.knowsAbout,
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": `${siteConfig.url}/#services`,
+      name: `${siteConfig.name} — Web Architecture & Digital Strategy`,
+      url: `${siteConfig.url}/services`,
+      description:
+        "Scalable Next.js development, psychological UI/UX design, and entity-first technical SEO.",
+      provider: { "@id": personId },
+      areaServed: {
+        "@type": "Country",
+        name: "Kenya",
+      },
+      serviceType: [
+        "Web Development",
+        "UI/UX Design",
+        "Technical SEO",
+        "Next.js Development",
+      ],
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${siteConfig.url}/#projects`,
+      name: "Featured Projects by James Maruti",
+      itemListElement: featuredProjects
+        .filter((project) => !project.comingSoon && project.href)
+        .map((project, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          item: {
+            "@type": "CreativeWork",
+            name: project.title,
+            description: project.description,
+            url: project.href,
+            author: { "@id": personId },
+          },
+        })),
+    },
+  ],
+};
 
 export const impactHistory = [
   {

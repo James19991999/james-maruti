@@ -1,19 +1,26 @@
-import type { Metadata } from "next";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbSchema, createPageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-data";
 
-export const metadata: Metadata = {
-  title: "Contact",
+export const metadata = createPageMetadata({
+  title: "Contact James Maruti | Hire a Next.js Developer",
   description:
-    "Get in touch with James Maruti for freelance partnerships, enterprise consultations, and system architecture reviews.",
-  alternates: { canonical: "/contact" },
-};
+    "Contact James Maruti for freelance partnerships, enterprise consultations, and scalable system architecture reviews in Nairobi, Kenya.",
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "" },
+          { name: "Contact", path: "/contact" },
+        ])}
+      />
       <TopNavBar />
       <main className="pt-24 overflow-x-hidden">
         <section className="px-gutter md:px-margin-desktop py-section-gap">

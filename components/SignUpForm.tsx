@@ -77,7 +77,7 @@ export default function SignUpForm() {
 
   return (
     <div>
-      <h1 className="font-headline-md text-headline-md text-primary mb-2">Create Account</h1>
+      <h2 className="font-headline-md text-headline-md text-primary mb-2">Create Account</h2>
       <p className="text-on-surface-variant mb-8">
         Initialize your presence in the Maruti ecosystem.
       </p>

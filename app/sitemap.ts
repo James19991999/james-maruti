@@ -14,10 +14,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/terms-of-service",
   ];
 
+  const priorities: Record<string, number> = {
+    "": 1,
+    "/services": 0.9,
+    "/expertise": 0.9,
+    "/contact": 0.8,
+    "/about": 0.8,
+    "/experience": 0.7,
+    "/schema": 0.5,
+    "/privacy-policy": 0.3,
+    "/terms-of-service": 0.3,
+  };
+
   return routes.map((route) => ({
     url: `${siteConfig.url}${route}`,
-    lastModified: new Date(),
+    lastModified: new Date("2026-07-03"),
     changeFrequency: route === "" ? "weekly" : "monthly",
-    priority: route === "" ? 1 : 0.7,
+    priority: priorities[route] ?? 0.7,
   }));
 }

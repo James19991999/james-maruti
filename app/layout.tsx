@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Libre_Caslon_Text, Manrope, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { siteConfig, personSchema } from "@/lib/site-data";
+import { siteConfig, structuredData } from "@/lib/site-data";
 import { AuthProvider } from "@/lib/auth-context";
 
 const libreCaslonText = Libre_Caslon_Text({
@@ -35,17 +35,17 @@ export const metadata: Metadata = {
   keywords: [
     "James Maruti",
     "UI Architect",
-    "Frontend Engineer",
     "Next.js Developer",
+    "Frontend Engineer",
+    "Web Developer Nairobi",
     "Digital Brand Strategist",
     "Nairobi Kenya",
     "Technical SEO",
+    "Entity-First SEO",
+    "UI/UX Designer Kenya",
   ],
   authors: [{ name: siteConfig.name, url: siteConfig.url }],
   creator: siteConfig.name,
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -53,11 +53,20 @@ export const metadata: Metadata = {
     title: siteConfig.title,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    images: [
+      {
+        url: "/opengraph-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.name} — UI Architect & Digital Strategist`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
+    images: ["/opengraph-image.jpg"],
   },
   robots: {
     index: true,
@@ -100,7 +109,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
       <body className="font-body-md text-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">

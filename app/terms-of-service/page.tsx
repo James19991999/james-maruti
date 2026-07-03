@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 
-export const metadata: Metadata = {
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
   title: "Terms of Service",
   description: "The terms governing use of the James Maruti portfolio and services.",
-  alternates: { canonical: "/terms-of-service" },
-  robots: { index: true, follow: true },
-};
+  path: "/terms-of-service",
+});
 
 const sections = [
   {

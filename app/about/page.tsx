@@ -1,20 +1,27 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { Metadata } from "next";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbSchema, createPageMetadata } from "@/lib/seo";
 import { foundationalValues, images, journeyMilestones, philosophyPillars, siteConfig } from "@/lib/site-data";
 
-export const metadata: Metadata = {
-  title: "About",
+export const metadata = createPageMetadata({
+  title: "About James Maruti | UI Architect & Next.js Developer",
   description:
-    "The philosophy behind James Maruti's practice: bridging technical rigor with media psychology, from linguistics theory to advanced Next.js architecture.",
-  alternates: { canonical: "/about" },
-};
+    "The philosophy behind James Maruti's practice: bridging technical rigor with media psychology, from linguistics theory to advanced Next.js architecture in Nairobi, Kenya.",
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "" },
+          { name: "About", path: "/about" },
+        ])}
+      />
       <TopNavBar />
       <main className="pt-24 overflow-x-hidden">
         {/* Header */}

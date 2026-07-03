@@ -1,14 +1,15 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo";
 import SignUpForm from "@/components/SignUpForm";
 import AuthBrandingPortrait from "@/components/AuthBrandingPortrait";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Create Account",
   description: "Create an account in the James Maruti client ecosystem.",
-  alternates: { canonical: "/sign-up" },
-  robots: { index: false, follow: false },
-};
+  path: "/sign-up",
+  noIndex: true,
+});
 
 export default function SignUpPage() {
   return (

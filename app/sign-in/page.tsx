@@ -1,14 +1,15 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/seo";
 import SignInForm from "@/components/SignInForm";
 import AuthBrandingPortrait from "@/components/AuthBrandingPortrait";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Sign In",
   description: "Sign in to the James Maruti client dashboard.",
-  alternates: { canonical: "/sign-in" },
-  robots: { index: false, follow: false },
-};
+  path: "/sign-in",
+  noIndex: true,
+});
 
 export default function SignInPage() {
   return (

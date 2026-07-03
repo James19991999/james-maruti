@@ -2,14 +2,15 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
+import { createPageMetadata } from "@/lib/seo";
 import { personSchema, siteConfig } from "@/lib/site-data";
 
-export const metadata: Metadata = {
-  title: "Entity Schema",
+export const metadata = createPageMetadata({
+  title: "Entity Schema | Structured Data Documentation",
   description:
-    "The Person JSON-LD structured data James Maruti's site publishes for entity-first technical SEO — transparently documented.",
-  alternates: { canonical: "/schema" },
-};
+    "The JSON-LD structured data James Maruti's site publishes for entity-first technical SEO — transparently documented.",
+  path: "/schema",
+});
 
 const fields = [
   { key: "@type", label: "Entity Type", value: personSchema["@type"] },

@@ -2,14 +2,15 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
+import { createPageMetadata } from "@/lib/seo";
 import { expertiseAreas, methodologySteps } from "@/lib/site-data";
 
-export const metadata: Metadata = {
-  title: "Expertise",
+export const metadata = createPageMetadata({
+  title: "Expertise | Scalable Systems, UI/UX & Technical SEO",
   description:
-    "James Maruti's core expertise: scalable systems architecture, media psychology & UI/UX, and entity-first technical SEO.",
-  alternates: { canonical: "/expertise" },
-};
+    "James Maruti's core expertise: scalable Next.js architecture, media psychology-driven UI/UX, and entity-first technical SEO for high-growth ventures.",
+  path: "/expertise",
+});
 
 export default function ExpertisePage() {
   return (
