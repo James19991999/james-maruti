@@ -63,18 +63,24 @@ const nextConfig = {
   },
 };
 
-// withSentryConfig is safe to apply unconditionally: without SENTRY_AUTH_TOKEN
-// set (source map upload credentials, separate from the DSN used at runtime),
-// the plugin skips source map upload rather than failing the build. Actual
-// error reporting is controlled independently by the DSN env vars in
-// sentry.*.config.ts, so error monitoring itself is still off until those are
-// set even though this wrapper is always active.
-export default withSentryConfig(nextConfig, {
-  silent: true,
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-  webpack: { treeshake: { removeDebugLogging: true } },
-  // No source maps are uploaded (and no Sentry network calls happen at all
-  // during build) unless SENTRY_AUTH_TOKEN is set.
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-});
+// withSentryConfig does real work at build time beyond source-map upload — it
+// auto-instruments route handlers. That's fine once Sentry is actually wanted,
+// but there's no reason for that instrumentation to be active at all for a
+// deployment that hasn't set a DSN yet. Rather than assume the SDK is a clean
+// no-op when unconfigured (an assumption made, and not verified, when this
+// was first added), only apply the wrapper when Sentry is genuinely in use.
+const sentryIsConfigured = Boolean(
+  process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
+);
+
+export default sentryIsConfigured
+  ? withSentryConfig(nextConfig, {
+      silent: true,
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      webpack: { treeshake: { removeDebugLogging: true } },
+      // No source maps are uploaded (and no Sentry network calls happen at all
+      // during build) unless SENTRY_AUTH_TOKEN is set.
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    })
+  : nextConfig;

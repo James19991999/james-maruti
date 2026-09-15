@@ -7,7 +7,7 @@ import { withTimeout } from "@/lib/with-timeout";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export async function POST(request: NextRequest) {
+async function handlePost(request: NextRequest): Promise<NextResponse> {
   let body: unknown;
   try {
     body = await request.json();
@@ -43,37 +43,42 @@ export async function POST(request: NextRequest) {
     console.error("Rate limit check failed, proceeding without it:", error);
   }
 
+  const db = getAdminDb();
+  // Use the email as the document ID to make repeat sign-ups idempotent.
+  await withTimeout(
+    db
+      .collection("newsletter_subscribers")
+      .doc(email.trim().toLowerCase())
+      .set(
+        {
+          email: email.trim().toLowerCase(),
+          subscribedAt: FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      ),
+    8000,
+    "Firestore write"
+  );
+
   try {
-    const db = getAdminDb();
-    // Use the email as the document ID to make repeat sign-ups idempotent.
     await withTimeout(
-      db
-        .collection("newsletter_subscribers")
-        .doc(email.trim().toLowerCase())
-        .set(
-          {
-            email: email.trim().toLowerCase(),
-            subscribedAt: FieldValue.serverTimestamp(),
-          },
-          { merge: true }
-        ),
-      8000,
-      "Firestore write"
+      sendNewsletterConfirmation(email.trim().toLowerCase()),
+      5000,
+      "Confirmation email"
     );
-
-    try {
-      await withTimeout(
-        sendNewsletterConfirmation(email.trim().toLowerCase()),
-        5000,
-        "Confirmation email"
-      );
-    } catch (error) {
-      console.error("Failed to send newsletter confirmation email:", error);
-    }
-
-    return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error) {
-    console.error("Failed to save newsletter subscriber:", error);
+    console.error("Failed to send newsletter confirmation email:", error);
+  }
+
+  return NextResponse.json({ ok: true }, { status: 201 });
+}
+
+/** Outer safety net — see app/api/contact/route.ts for why this exists. */
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  try {
+    return await handlePost(request);
+  } catch (error) {
+    console.error("Unhandled error in /api/newsletter:", error);
     return NextResponse.json(
       { error: "Something went wrong on our end. Please try again shortly." },
       { status: 500 }

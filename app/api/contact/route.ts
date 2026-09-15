@@ -7,7 +7,7 @@ import { withTimeout } from "@/lib/with-timeout";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export async function POST(request: NextRequest) {
+async function handlePost(request: NextRequest): Promise<NextResponse> {
   let body: unknown;
   try {
     body = await request.json();
@@ -57,38 +57,53 @@ export async function POST(request: NextRequest) {
     console.error("Rate limit check failed, proceeding without it:", error);
   }
 
+  const db = getAdminDb();
+  const inquiryData = {
+    name: name.trim(),
+    email: email.trim(),
+    inquiryType: typeof inquiryType === "string" ? inquiryType.trim() : "",
+    message: message.trim(),
+  };
+
+  await withTimeout(
+    db.collection("inquiries").add({
+      ...inquiryData,
+      createdAt: FieldValue.serverTimestamp(),
+      source: "contact-form",
+    }),
+    8000,
+    "Firestore write"
+  );
+
+  // Awaited (not fire-and-forget) because serverless functions can be frozen the
+  // instant a response is returned, which would silently drop an unawaited send.
+  // Wrapped so a failed email still doesn't fail the request — the inquiry is
+  // already safely stored in Firestore either way.
   try {
-    const db = getAdminDb();
-    const inquiryData = {
-      name: name.trim(),
-      email: email.trim(),
-      inquiryType: typeof inquiryType === "string" ? inquiryType.trim() : "",
-      message: message.trim(),
-    };
-
-    await withTimeout(
-      db.collection("inquiries").add({
-        ...inquiryData,
-        createdAt: FieldValue.serverTimestamp(),
-        source: "contact-form",
-      }),
-      8000,
-      "Firestore write"
-    );
-
-    // Awaited (not fire-and-forget) because serverless functions can be frozen the
-    // instant a response is returned, which would silently drop an unawaited send.
-    // Wrapped so a failed email still doesn't fail the request — the inquiry is
-    // already safely stored in Firestore either way.
-    try {
-      await withTimeout(sendInquiryNotification(inquiryData), 5000, "Notification email");
-    } catch (error) {
-      console.error("Failed to send inquiry notification email:", error);
-    }
-
-    return NextResponse.json({ ok: true }, { status: 201 });
+    await withTimeout(sendInquiryNotification(inquiryData), 5000, "Notification email");
   } catch (error) {
-    console.error("Failed to save contact inquiry:", error);
+    console.error("Failed to send inquiry notification email:", error);
+  }
+
+  return NextResponse.json({ ok: true }, { status: 201 });
+}
+
+/**
+ * Outer safety net: handlePost() above already catches its own known failure
+ * modes (rate limiter, Firestore write) and returns clean JSON for them. This
+ * wrapper exists for the failure modes that AREN'T inside a try/catch there —
+ * an unanticipated throw from getAdminDb() itself, a bug introduced later, a
+ * build/config change upstream (this route was actually broken for a while
+ * by an unconditional Sentry webpack wrapper doing more at build time than
+ * expected — see next.config.mjs). Whatever it is, the person filling out
+ * this form should always get a real, readable error, never a raw platform
+ * crash page that isn't valid JSON.
+ */
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  try {
+    return await handlePost(request);
+  } catch (error) {
+    console.error("Unhandled error in /api/contact:", error);
     return NextResponse.json(
       { error: "Something went wrong on our end. Please try again shortly." },
       { status: 500 }
