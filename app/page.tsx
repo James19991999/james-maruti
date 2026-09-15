@@ -5,6 +5,7 @@ import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 import FeatureCard from "@/components/FeatureCard";
 import ProjectCard from "@/components/ProjectCard";
+import Reveal from "@/components/Reveal";
 import { createPageMetadata } from "@/lib/seo";
 import {
   expertiseDomains,
@@ -31,7 +32,7 @@ export default function HomePage() {
   return (
     <>
       <TopNavBar />
-      <main className="pt-24 overflow-x-hidden">
+      <main className="pt-24 overflow-x-hidden animate-page-fade-in">
         {/* Hero Section */}
         <section className="min-h-[calc(100dvh-6rem)] flex flex-col justify-center px-gutter md:px-margin-desktop py-section-gap">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-16 items-center max-w-7xl mx-auto w-full">
@@ -101,8 +102,10 @@ export default function HomePage() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {expertiseDomains.map((domain) => (
-              <FeatureCard key={domain.title} {...domain} />
+            {expertiseDomains.map((domain, i) => (
+              <Reveal key={domain.title} delayMs={i * 100}>
+                <FeatureCard {...domain} />
+              </Reveal>
             ))}
           </div>
         </section>
@@ -121,8 +124,10 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProjects.map((project) => (
-              <ProjectCard key={project.title} {...project} />
+            {featuredProjects.map((project, i) => (
+              <Reveal key={project.title} delayMs={(i % 3) * 100}>
+                <ProjectCard {...project} />
+              </Reveal>
             ))}
           </div>
         </section>
@@ -138,20 +143,19 @@ export default function HomePage() {
             </h2>
           </div>
           <div className="max-w-4xl mx-auto space-y-12">
-            {impactHistory.map((entry) => (
-              <div
-                key={entry.org}
-                className="flex flex-col md:flex-row gap-4 md:gap-8 border-b border-outline-variant/20 pb-8"
-              >
-                <div className="md:w-1/3">
-                  <p className="font-label-mono text-label-mono text-secondary">{entry.date}</p>
-                  <p className="font-headline-md text-lg text-primary mt-1">{entry.org}</p>
+            {impactHistory.map((entry, i) => (
+              <Reveal key={entry.org} delayMs={Math.min(i, 3) * 80}>
+                <div className="flex flex-col md:flex-row gap-4 md:gap-8 border-b border-outline-variant/20 pb-8">
+                  <div className="md:w-1/3">
+                    <p className="font-label-mono text-label-mono text-secondary">{entry.date}</p>
+                    <p className="font-headline-md text-lg text-primary mt-1">{entry.org}</p>
+                  </div>
+                  <div className="md:w-2/3">
+                    <h3 className="font-headline-md text-xl text-primary mb-2">{entry.role}</h3>
+                    <p className="text-on-surface-variant">{entry.description}</p>
+                  </div>
                 </div>
-                <div className="md:w-2/3">
-                  <h3 className="font-headline-md text-xl text-primary mb-2">{entry.role}</h3>
-                  <p className="text-on-surface-variant">{entry.description}</p>
-                </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
