@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx next lint
+
+      - name: Test
+        run: npm test -- --ci
+
+      - name: Build
+        # Runs with no env vars on purpose: lib/firebase.ts guards client SDK
+        # init specifically so `next build` succeeds without real credentials
+        # (see the comment there). This also finally verifies the full build
+        # end-to-end somewhere with normal internet access — the sandbox this
+        # project was originally built in blocks fonts.googleapis.com, so
+        # `next build` (which fetches fonts via next/font at build time)
+        # could never be confirmed there. It can here.
+        run: npm run build
