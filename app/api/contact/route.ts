@@ -3,6 +3,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase-admin";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { sendInquiryNotification } from "@/lib/notifications";
+import { withTimeout } from "@/lib/with-timeout";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -38,7 +39,11 @@ export async function POST(request: NextRequest) {
 
   try {
     const ip = getClientIp(request);
-    const { allowed, retryAfterSeconds } = await checkRateLimit(ip, "contact");
+    const { allowed, retryAfterSeconds } = await withTimeout(
+      checkRateLimit(ip, "contact"),
+      5000,
+      "Rate limit check"
+    );
     if (!allowed) {
       return NextResponse.json(
         { error: "Too many submissions. Please try again in a few minutes." },
@@ -61,18 +66,22 @@ export async function POST(request: NextRequest) {
       message: message.trim(),
     };
 
-    await db.collection("inquiries").add({
-      ...inquiryData,
-      createdAt: FieldValue.serverTimestamp(),
-      source: "contact-form",
-    });
+    await withTimeout(
+      db.collection("inquiries").add({
+        ...inquiryData,
+        createdAt: FieldValue.serverTimestamp(),
+        source: "contact-form",
+      }),
+      8000,
+      "Firestore write"
+    );
 
     // Awaited (not fire-and-forget) because serverless functions can be frozen the
     // instant a response is returned, which would silently drop an unawaited send.
     // Wrapped so a failed email still doesn't fail the request — the inquiry is
     // already safely stored in Firestore either way.
     try {
-      await sendInquiryNotification(inquiryData);
+      await withTimeout(sendInquiryNotification(inquiryData), 5000, "Notification email");
     } catch (error) {
       console.error("Failed to send inquiry notification email:", error);
     }

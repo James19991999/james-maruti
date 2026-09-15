@@ -3,6 +3,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase-admin";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { sendNewsletterConfirmation } from "@/lib/notifications";
+import { withTimeout } from "@/lib/with-timeout";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -27,7 +28,11 @@ export async function POST(request: NextRequest) {
 
   try {
     const ip = getClientIp(request);
-    const { allowed, retryAfterSeconds } = await checkRateLimit(ip, "newsletter");
+    const { allowed, retryAfterSeconds } = await withTimeout(
+      checkRateLimit(ip, "newsletter"),
+      5000,
+      "Rate limit check"
+    );
     if (!allowed) {
       return NextResponse.json(
         { error: "Too many attempts. Please try again in a few minutes." },
@@ -41,19 +46,27 @@ export async function POST(request: NextRequest) {
   try {
     const db = getAdminDb();
     // Use the email as the document ID to make repeat sign-ups idempotent.
-    await db
-      .collection("newsletter_subscribers")
-      .doc(email.trim().toLowerCase())
-      .set(
-        {
-          email: email.trim().toLowerCase(),
-          subscribedAt: FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
+    await withTimeout(
+      db
+        .collection("newsletter_subscribers")
+        .doc(email.trim().toLowerCase())
+        .set(
+          {
+            email: email.trim().toLowerCase(),
+            subscribedAt: FieldValue.serverTimestamp(),
+          },
+          { merge: true }
+        ),
+      8000,
+      "Firestore write"
+    );
 
     try {
-      await sendNewsletterConfirmation(email.trim().toLowerCase());
+      await withTimeout(
+        sendNewsletterConfirmation(email.trim().toLowerCase()),
+        5000,
+        "Confirmation email"
+      );
     } catch (error) {
       console.error("Failed to send newsletter confirmation email:", error);
     }

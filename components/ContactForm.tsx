@@ -45,7 +45,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
 
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-        throw new Error(body?.error ?? "Something went wrong. Please try again.");
+        throw new Error(body?.error ?? `Something went wrong (status ${response.status}). Please try again.`);
       }
 
       setStatus("success");
