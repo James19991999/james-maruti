@@ -6,6 +6,8 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
 import { dashboardFooterLinks, dashboardNavLinks } from "@/lib/site-data";
+import ThemeToggle from "./ThemeToggle";
+import CommandPaletteTrigger from "./CommandPaletteTrigger";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -25,9 +27,12 @@ export default function Sidebar() {
             {user?.displayName ?? "James Maruti"}
           </span>
         </Link>
-        <p className="font-label-mono text-[11px] text-on-surface-variant tracking-widest uppercase mb-10">
+        <p className="font-label-mono text-[11px] text-on-surface-variant tracking-widest uppercase mb-6">
           UI Architect &amp; Strategist
         </p>
+        <div className="mb-6">
+          <CommandPaletteTrigger />
+        </div>
 
         <nav aria-label="Dashboard" className="space-y-1">
           {dashboardNavLinks.map((link) => {
@@ -84,6 +89,10 @@ export default function Sidebar() {
           </span>
           Sign Out
         </button>
+        <div className="flex items-center gap-3 px-4 py-2 mt-1">
+          <ThemeToggle />
+          <span className="font-label-mono text-label-mono text-on-surface-variant">Theme</span>
+        </div>
       </div>
     </aside>
   );

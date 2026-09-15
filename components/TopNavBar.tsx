@@ -1,6 +1,8 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { mainNavLinks } from "@/lib/site-data";
+import ThemeToggle from "./ThemeToggle";
+import CommandPaletteTrigger from "./CommandPaletteTrigger";
 
 const MobileMenu = dynamic(() => import("./MobileMenu"), { ssr: false });
 
@@ -30,6 +32,7 @@ export default function TopNavBar() {
         </div>
 
         <div className="flex items-center gap-4">
+          <CommandPaletteTrigger />
           <span
             className="material-symbols-outlined text-primary"
             style={{ fontVariationSettings: "'FILL' 1" }}
@@ -38,6 +41,7 @@ export default function TopNavBar() {
           >
             verified
           </span>
+          <ThemeToggle />
           <Link
             href="/contact"
             className="hidden md:block bg-primary text-on-primary px-6 py-2.5 rounded-lg font-label-mono text-label-mono hover:bg-primary-container transition-all active:scale-95"

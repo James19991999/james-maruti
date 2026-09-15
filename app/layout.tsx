@@ -1,8 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { Libre_Caslon_Text, Manrope, JetBrains_Mono } from "next/font/google";
+import dynamic from "next/dynamic";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { siteConfig, structuredData } from "@/lib/site-data";
 import MaterialSymbolsLoader from "@/components/MaterialSymbolsLoader";
+import ThemeProvider from "@/components/ThemeProvider";
+import { CommandPaletteContextProvider } from "@/components/CommandPaletteContext";
+
+const CommandPalette = dynamic(() => import("@/components/CommandPalette"), { ssr: false });
+const ChatWidget = dynamic(() => import("@/components/ChatWidget"), { ssr: false });
 
 const libreCaslonText = Libre_Caslon_Text({
   subsets: ["latin"],
@@ -83,7 +91,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#00113a",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fcf9f8" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f1219" },
+  ],
 };
 
 export default function RootLayout({
@@ -94,6 +105,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`scroll-smooth ${libreCaslonText.variable} ${manrope.variable} ${jetbrainsMono.variable}`}
     >
       <head>
@@ -106,8 +118,16 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body-md text-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
-        <MaterialSymbolsLoader />
-        {children}
+        <ThemeProvider>
+          <CommandPaletteContextProvider>
+            <MaterialSymbolsLoader />
+            {children}
+            <CommandPalette />
+            {process.env.NEXT_PUBLIC_CHAT_ENABLED === "true" && <ChatWidget />}
+          </CommandPaletteContextProvider>
+        </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
