@@ -418,12 +418,56 @@ export const footerLinks = [
   { label: "LinkedIn", href: siteConfig.linkedin },
   { label: "GitHub", href: siteConfig.github },
   { label: "Philosophy", href: "/about" },
+  { label: "Now", href: "/now" },
 ];
 
 export const legalFooterLinks = [
+  { label: "FAQ", href: "/faq" },
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms of Service", href: "/terms-of-service" },
   { label: "Entity Schema", href: "/schema" },
+];
+
+export const faqs = [
+  {
+    question: "What services do you offer?",
+    answer:
+      "Three core areas: scalable web architecture (React, Next.js, TypeScript), psychological UI/UX design that reduces cognitive load and improves conversion, and entity-first technical SEO using Schema.org and semantic structure rather than just keyword targeting.",
+  },
+  {
+    question: "What's your tech stack?",
+    answer:
+      "React, TypeScript, Tailwind CSS, and Node.js on the engineering side; WordPress and Webflow for content-driven builds; Figma for design; GraphQL where an API layer calls for it.",
+  },
+  {
+    question: "Are you available for freelance work right now?",
+    answer:
+      "Yes — available for freelance partnerships and high-impact enterprise consultations. The fastest way to start a conversation is the contact form, with an inquiry type so it routes appropriately.",
+  },
+  {
+    question: "Where are you based, and do you work with international clients?",
+    answer:
+      "Based in Nairobi, Kenya, working remotely with clients across time zones — the SaaS platforms in the portfolio (LocateSafe, EduConnect) were built for and are used by teams outside Kenya.",
+  },
+  {
+    question: "What's your typical response time?",
+    answer: "24–48 business hours for inquiries submitted through the contact form.",
+  },
+  {
+    question: "Do you work on existing codebases, or only new builds?",
+    answer:
+      "Both. A lot of the work described under 'Scalable Web Architecture' is exactly this — auditing an existing system's architecture and performance, then refactoring toward something that holds up as it grows, not just building greenfield.",
+  },
+  {
+    question: "What makes your approach different?",
+    answer:
+      "A background in Linguistics, Media and Communication (Moi University) shapes how the technical work gets applied — treating UI decisions as information-processing problems, not just visual ones, and pairing that with the same rigor on the engineering and SEO side.",
+  },
+  {
+    question: "How do I get started?",
+    answer:
+      "Use the contact form and pick the inquiry type that best matches what you need — enterprise consultation, freelance partnership, architecture review, or something else. Include a brief on the project and you'll hear back within 24–48 business hours.",
+  },
 ];
 
 export const homePhilosophy = {

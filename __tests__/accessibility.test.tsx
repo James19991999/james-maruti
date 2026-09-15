@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
+import { renderWithProviders } from "@/testing/test-utils";
 
 // SignInForm/SignUpForm call useRouter() for post-auth redirects. Outside of Next's
 // actual App Router (i.e. in a unit test), that throws unless it's mocked.
@@ -17,6 +17,8 @@ import ExperiencePage from "@/app/experience/page";
 import ExpertisePage from "@/app/expertise/page";
 import ServicesPage from "@/app/services/page";
 import ContactPage from "@/app/contact/page";
+import FaqPage from "@/app/faq/page";
+import NowPage from "@/app/now/page";
 import PrivacyPolicyPage from "@/app/privacy-policy/page";
 import TermsOfServicePage from "@/app/terms-of-service/page";
 import SchemaPage from "@/app/schema/page";
@@ -40,13 +42,15 @@ const axeOptions = {
   },
 };
 
-const pages: Array<[string, () => JSX.Element]> = [
+const pages: Array<[string, () => JSX.Element | Promise<JSX.Element>]> = [
   ["Home", HomePage],
   ["About", AboutPage],
   ["Experience", ExperiencePage],
   ["Expertise", ExpertisePage],
   ["Services", ServicesPage],
   ["Contact", ContactPage],
+  ["FAQ", FaqPage],
+  ["Now", NowPage],
   ["Privacy Policy", PrivacyPolicyPage],
   ["Terms of Service", TermsOfServicePage],
   ["Entity Schema", SchemaPage],
@@ -57,7 +61,11 @@ const pages: Array<[string, () => JSX.Element]> = [
 
 describe("Accessibility (axe)", () => {
   it.each(pages)("%s page has no detectable a11y violations", async (_name, Page) => {
-    const { container } = render(<Page />);
+    // Some pages are async Server Components (e.g. About, which awaits GitHub
+    // data) — React Testing Library can only render a resolved element, not a
+    // Promise, so async ones are awaited to their JSX first.
+    const element = await Page();
+    const { container } = renderWithProviders(element);
     const results = await axe(container, axeOptions);
     expect(results).toHaveNoViolations();
   });
