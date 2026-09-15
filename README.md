@@ -57,9 +57,9 @@ for that host.
 
 ```
 app/
-  layout.tsx              Root layout: fonts, SEO metadata, JSON-LD, AuthProvider
+  layout.tsx              Root layout: fonts, SEO metadata, JSON-LD, theme/command-palette providers
   page.tsx                Homepage (hero, expertise, projects, history, philosophy, contact CTA)
-  about/  experience/  expertise/  services/  contact/  schema/
+  about/  experience/  expertise/  services/  contact/  schema/  faq/  now/
   privacy-policy/  terms-of-service/
   sign-in/  sign-up/
   dashboard/
@@ -69,19 +69,27 @@ app/
     settings/page.tsx       Account Settings (Profile tab is live; others are labeled "coming soon")
   api/contact/route.ts     POST -> validates -> writes to Firestore via Admin SDK
   api/newsletter/route.ts  POST -> validates -> upserts subscriber doc
-  sitemap.ts / robots.ts   Generated SEO files
+  api/chat/route.ts        POST -> optional AI chat widget backend (see below)
+  sitemap.ts / robots.ts / manifest.ts   Generated SEO + PWA files
   icon.svg / apple-icon.png / opengraph-image.png   Brand favicon + social share image (file-based, auto-wired by Next)
   not-found.tsx / loading.tsx / global-error.tsx     Branded 404, route-transition, and error states
 components/                TopNavBar, Footer, FeatureCard, ProjectCard, ContactForm,
-                            Sidebar, SignInForm, SignUpForm, SettingsTabs, MobileMenu
+                            Sidebar, SignInForm, SignUpForm, SettingsTabs, MobileMenu,
+                            ThemeProvider, ThemeToggle, CommandPalette(+Context/Trigger),
+                            ChatWidget, GithubActivity, Accordion, Reveal
 lib/
   site-data.ts             All copy/content -- single source of truth for every page
   firebase.ts              Client SDK init (guarded so builds succeed without credentials)
   firebase-admin.ts        Server-only Admin SDK init
   auth-context.tsx         React context exposing Firebase auth state
+  chat-context.ts          Builds the AI chat widget's system prompt from site-data.ts
+  github.ts                GitHub GraphQL API client for the contribution graph
+  rate-limit.ts            Firestore-backed rate limiter shared by contact/newsletter/chat
+  notifications.ts         Optional Resend email notifications
 public/documents/
   james-maruti-cv.pdf      Real, downloadable ATS-formatted CV generated from the site's own content
 __tests__/                 Jest + RTL unit tests
+testing/test-utils.tsx     Shared render helper (outside __tests__/ so Jest won't treat it as a suite)
 firestore.rules            Security rules for Firestore
 .env.example                Environment variable template
 ```
@@ -149,14 +157,60 @@ On top of the initial build, this pass added:
   positives — run a real browser tool (Lighthouse, axe DevTools) before launch to check actual
   contrast.
 
+## Modern features pass
+
+On top of the hardening pass, this added:
+
+- **Dark mode** — the full color system was converted from hardcoded hex to CSS variables so
+  every existing utility class (`bg-surface`, `text-primary`, etc.) works unchanged in both
+  themes. The dark palette follows Material Design 3 conventions: "fixed" roles
+  (`secondary-fixed`, `primary-fixed`, etc.) are intentionally identical in both themes — that's
+  the point of a fixed role — while `primary`/`secondary`/`tertiary` swap to their lighter
+  "fixed-dim" tones for contrast against dark surfaces. `next-themes` handles persistence and
+  system-preference detection; toggle is in `TopNavBar` and the dashboard `Sidebar`.
+- **Vercel Analytics + Speed Insights** — real visitor and performance data, where there was
+  previously none.
+- **Scroll-reveal micro-interactions** (`components/Reveal.tsx`) — IntersectionObserver-based,
+  no new dependency, automatically inert under `prefers-reduced-motion` via the existing global
+  CSS rule. Applied to the homepage's card grids and history timeline.
+- **Command palette** (`Cmd+K` / `Ctrl+K`, `components/CommandPalette.tsx`) — built on `cmdk`.
+  Fuzzy search across pages, projects, and quick actions (toggle theme, download CV, open
+  GitHub). Global keyboard shortcut via `CommandPaletteContext`; trigger buttons in `TopNavBar`
+  and `Sidebar`.
+- **FAQ page** (`/faq`) — 8 questions grounded in existing site content (services, stack,
+  availability, location) rather than invented copy, with `FAQPage` JSON-LD schema.
+- **`/now` page** — the personal-web "now page" convention (nownownow.com). Content pulled
+  directly from `experienceEntries`/`expertiseAreas` rather than written separately, so it can't
+  drift out of sync with the rest of the site.
+- **AI chat widget** (`components/ChatWidget.tsx`, `/api/chat`) — optional, off by default.
+  Proxies to the Anthropic API with a system prompt assembled entirely from `lib/site-data.ts`
+  (`lib/chat-context.ts`), so it can't invent pricing, availability, or claims not already on
+  the site. Rate-limited via the same Firestore limiter used by the contact form. **Requires
+  both `ANTHROPIC_API_KEY` and `NEXT_PUBLIC_CHAT_ENABLED=true`** — deliberately gated behind two
+  separate flags so the widget never appears half-configured (a chat bubble that can't respond
+  looks broken, not "coming soon").
+- **GitHub contribution graph** (`components/GithubActivity.tsx`, on `/about`) — optional,
+  needs `GITHUB_TOKEN`. Uses GitHub's GraphQL API rather than an unverified third-party
+  image-proxy service, since contribution data isn't available via unauthenticated REST. A
+  token with no special scopes is enough (public data). The whole section — not just the
+  graph — is omitted when unconfigured, so there's no empty heading left over.
+- **Page transitions** — a CSS fade applied directly to each marketing page's `<main>` element.
+  Next 14.2.35 has no support at all for the experimental `viewTransition` flag (it landed in a
+  later version), and hand-rolling the native View Transitions API across every `<Link>` in the
+  app was a much bigger risk than this cosmetic feature justified. A root-level
+  `app/template.tsx` was tried first and reverted — it would've remounted everything below it,
+  including the auth-gated dashboard layout, on every navigation, causing a loading flash there
+  for a feature that was only ever meant for the public pages.
+
 ## Testing
 
 ```bash
 npm test
 ```
 
-29 tests across 7 suites: `FeatureCard`, `ProjectCard`, `Footer`, `TopNavBar`, `ContactForm`,
-`NewsletterForm`, and an `accessibility` suite that runs `jest-axe` against every public page.
+38 tests across 9 suites: `FeatureCard`, `ProjectCard`, `Footer`, `TopNavBar`, `ContactForm`,
+`NewsletterForm`, `Accordion`, `ChatWidget`, and an `accessibility` suite that runs `jest-axe`
+against every public page (including async Server Components like `/about`).
 
 ## Deploying
 
