@@ -1,3 +1,5 @@
+import { withSentryConfig } from "@sentry/nextjs/config";
+
 const ContentSecurityPolicy = [
   "default-src 'self'",
   // 'unsafe-inline' is needed for the JSON-LD <script> tag and a couple of inline style
@@ -7,7 +9,7 @@ const ContentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: https://lh3.googleusercontent.com https://jamesmaruti.site",
-  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com",
+  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.sentry.io https://*.ingest.sentry.io",
   // Firebase Auth's Google/GitHub sign-in popups need to be frameable.
   "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://github.com",
   "object-src 'none'",
@@ -61,4 +63,18 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+// withSentryConfig is safe to apply unconditionally: without SENTRY_AUTH_TOKEN
+// set (source map upload credentials, separate from the DSN used at runtime),
+// the plugin skips source map upload rather than failing the build. Actual
+// error reporting is controlled independently by the DSN env vars in
+// sentry.*.config.ts, so error monitoring itself is still off until those are
+// set even though this wrapper is always active.
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  webpack: { treeshake: { removeDebugLogging: true } },
+  // No source maps are uploaded (and no Sentry network calls happen at all
+  // during build) unless SENTRY_AUTH_TOKEN is set.
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+});
