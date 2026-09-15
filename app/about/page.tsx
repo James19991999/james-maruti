@@ -3,6 +3,7 @@ import Image from "next/image";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
+import GithubActivity, { fetchGithubActivity } from "@/components/GithubActivity";
 import { breadcrumbSchema, createPageMetadata } from "@/lib/seo";
 import { foundationalValues, images, journeyMilestones, philosophyPillars, siteConfig } from "@/lib/site-data";
 
@@ -13,7 +14,9 @@ export const metadata = createPageMetadata({
   path: "/about",
 });
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const githubActivity = await fetchGithubActivity();
+
   return (
     <>
       <JsonLd
@@ -23,7 +26,7 @@ export default function AboutPage() {
         ])}
       />
       <TopNavBar />
-      <main className="pt-24 overflow-x-hidden">
+      <main className="pt-24 overflow-x-hidden animate-page-fade-in">
         {/* Header */}
         <section className="px-gutter md:px-margin-desktop py-section-gap">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 items-start">
@@ -161,6 +164,22 @@ export default function AboutPage() {
             ))}
           </div>
         </section>
+
+        {/* GitHub Activity — the whole section is omitted if GITHUB_TOKEN isn't configured */}
+        {githubActivity && (
+          <section className="px-gutter md:px-margin-desktop py-section-gap">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="font-headline-md text-headline-md text-primary mb-2">
+                Recent Activity
+              </h2>
+              <p className="text-on-surface-variant mb-8">
+                The code doesn&apos;t stop at the portfolio — here&apos;s what&apos;s actually
+                shipping.
+              </p>
+              <GithubActivity data={githubActivity} />
+            </div>
+          </section>
+        )}
 
         {/* CTA */}
         <section className="px-gutter md:px-margin-desktop py-section-gap text-center">
