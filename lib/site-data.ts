@@ -403,6 +403,7 @@ export const inquiryTypes = [
 
 export const dashboardNavLinks = [
   { icon: "dashboard", label: "Overview", href: "/dashboard" },
+  { icon: "mail", label: "Inquiries", href: "/dashboard/inquiries" },
   { icon: "folder_special", label: "Projects", href: "/dashboard/projects" },
   { icon: "terminal", label: "Technical Stack", href: "/dashboard/stack" },
   { icon: "history_edu", label: "Journal", href: "/dashboard/journal" },

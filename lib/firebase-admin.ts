@@ -1,5 +1,7 @@
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * Server-only Firebase Admin instance. Never import this file from a
@@ -27,4 +29,53 @@ function getAdminApp(): App {
 
 export function getAdminDb() {
   return getFirestore(getAdminApp());
+}
+
+export function getAdminAuth() {
+  return getAuth(getAdminApp());
+}
+
+/**
+ * Sign-up is open to the public (anyone can create an account at /sign-up),
+ * but that account shouldn't automatically be able to read sensitive data —
+ * real people's names, emails, and messages from the contact form. This
+ * checks a Firebase ID token AND cross-references the caller's email against
+ * an explicit allowlist, so "logged in" and "authorized to read inquiries"
+ * stay two separate things.
+ *
+ * Returns the verified, allowlisted email on success, or a NextResponse to
+ * return immediately (401/403) on failure — callers should check which they
+ * got back before proceeding.
+ */
+export async function requireAdmin(
+  request: NextRequest
+): Promise<{ email: string } | NextResponse> {
+  const authHeader = request.headers.get("authorization");
+  const idToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+
+  if (!idToken) {
+    return NextResponse.json({ error: "Missing authorization token." }, { status: 401 });
+  }
+
+  let decoded;
+  try {
+    decoded = await getAdminAuth().verifyIdToken(idToken);
+  } catch {
+    return NextResponse.json({ error: "Invalid or expired session." }, { status: 401 });
+  }
+
+  const email = decoded.email?.toLowerCase();
+  const allowlist = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+
+  if (!email || allowlist.length === 0 || !allowlist.includes(email)) {
+    return NextResponse.json(
+      { error: "You're signed in, but this account isn't authorized for admin data." },
+      { status: 403 }
+    );
+  }
+
+  return { email };
 }

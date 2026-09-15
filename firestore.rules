@@ -10,7 +10,11 @@ service cloud.firestore {
 
     // Contact inquiries and newsletter signups are written exclusively by the
     // server (via /api/contact and /api/newsletter using the Admin SDK, which
-    // bypasses these rules). Deny all direct client access.
+    // bypasses these rules). Deny all direct client access -- reading this
+    // data (e.g. for the dashboard's Inquiries view) also goes through the
+    // Admin SDK, via /api/dashboard/inquiries, gated by requireAdmin() in
+    // lib/firebase-admin.ts (ID token verification + an ADMIN_EMAILS
+    // allowlist), not through these rules.
     match /inquiries/{docId} {
       allow read, write: if false;
     }
