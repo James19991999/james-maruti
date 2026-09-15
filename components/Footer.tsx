@@ -1,6 +1,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { footerLinks, legalFooterLinks } from "@/lib/site-data";
+import Logo from "./Logo";
 
 const NewsletterForm = dynamic(() => import("./NewsletterForm"));
 
@@ -9,7 +10,10 @@ export default function Footer() {
     <footer className="border-t border-outline-variant/30 bg-surface-container-low">
       <div className="px-gutter md:px-margin-desktop py-10 max-w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
         <div>
-          <span className="font-headline-md text-xl font-bold text-primary">James Maruti</span>
+          <Link href="/" className="inline-flex items-center">
+            <Logo size={32} />
+            <span className="sr-only">James Maruti</span>
+          </Link>
           <p className="font-label-mono text-[11px] text-on-surface-variant mt-1">
             Architecting the future of the web.
           </p>

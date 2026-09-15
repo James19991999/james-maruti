@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { mainNavLinks } from "@/lib/site-data";
 import ThemeToggle from "./ThemeToggle";
 import CommandPaletteTrigger from "./CommandPaletteTrigger";
+import Logo from "./Logo";
 
 const MobileMenu = dynamic(() => import("./MobileMenu"), { ssr: false });
 
@@ -14,8 +15,9 @@ export default function TopNavBar() {
     >
       <div className="flex justify-between items-center px-gutter md:px-margin-desktop py-4 max-w-full mx-auto">
         <div className="flex items-center gap-2">
-          <Link href="/" className="font-headline-md text-headline-md font-bold text-primary">
-            James Maruti
+          <Link href="/" className="flex items-center">
+            <Logo size={38} />
+            <span className="sr-only">James Maruti</span>
           </Link>
         </div>
 
