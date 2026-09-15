@@ -24,7 +24,7 @@ export default function SchemaPage() {
   return (
     <>
       <TopNavBar />
-      <main className="pt-24 overflow-x-hidden">
+      <main className="pt-24 overflow-x-hidden animate-page-fade-in">
         <section className="px-gutter md:px-margin-desktop py-section-gap">
           <span className="font-label-mono text-label-mono text-secondary tracking-widest uppercase">
             Entity-First SEO
