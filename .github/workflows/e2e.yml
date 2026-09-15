@@ -1,0 +1,34 @@
+name: E2E (Playwright)
+
+# Deliberately NOT run on every push/PR like ci.yml — these tests were
+# authored without being able to install a browser to actually run them (see
+# README), so they're not proven yet. Blocking every PR on unverified tests
+# would be worse than not running them automatically at all. Run manually
+# from the Actions tab once you've confirmed locally that `npm run test:e2e`
+# passes; wire this into ci.yml's `on:` triggers yourself once it's proven.
+on:
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
