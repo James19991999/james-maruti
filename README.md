@@ -65,22 +65,24 @@ app/
   dashboard/
     layout.tsx             Client-side auth guard + Sidebar
     page.tsx                Overview
+    inquiries/page.tsx      Real contact-form/newsletter data -- see below, needs ADMIN_EMAILS
     projects/ stack/ journal/ archive/ support/   Placeholder panels (Settings is fully wired)
     settings/page.tsx       Account Settings (Profile tab is live; others are labeled "coming soon")
   api/contact/route.ts     POST -> validates -> writes to Firestore via Admin SDK
   api/newsletter/route.ts  POST -> validates -> upserts subscriber doc
   api/chat/route.ts        POST -> optional AI chat widget backend (see below)
+  api/dashboard/inquiries/route.ts   GET -> admin-only, verified via requireAdmin()
   sitemap.ts / robots.ts / manifest.ts   Generated SEO + PWA files
   icon.svg / apple-icon.png / opengraph-image.png   Brand favicon + social share image (file-based, auto-wired by Next)
-  not-found.tsx / loading.tsx / global-error.tsx     Branded 404, route-transition, and error states
+  not-found.tsx / loading.tsx / global-error.tsx     Branded 404, route-transition, and error states (global-error reports to Sentry)
 components/                TopNavBar, Footer, FeatureCard, ProjectCard, ContactForm,
                             Sidebar, SignInForm, SignUpForm, SettingsTabs, MobileMenu,
                             ThemeProvider, ThemeToggle, CommandPalette(+Context/Trigger),
-                            ChatWidget, GithubActivity, Accordion, Reveal
+                            ChatWidget, GithubActivity, Accordion, Reveal, InquiriesView
 lib/
   site-data.ts             All copy/content -- single source of truth for every page
   firebase.ts              Client SDK init (guarded so builds succeed without credentials)
-  firebase-admin.ts        Server-only Admin SDK init
+  firebase-admin.ts        Server-only Admin SDK init + requireAdmin() token/allowlist check
   auth-context.tsx         React context exposing Firebase auth state
   chat-context.ts          Builds the AI chat widget's system prompt from site-data.ts
   github.ts                GitHub GraphQL API client for the contribution graph
@@ -90,6 +92,10 @@ public/documents/
   james-maruti-cv.pdf      Real, downloadable ATS-formatted CV generated from the site's own content
 __tests__/                 Jest + RTL unit tests
 testing/test-utils.tsx     Shared render helper (outside __tests__/ so Jest won't treat it as a suite)
+e2e/                       Playwright specs (unproven -- see Operational pass section)
+sentry.client.config.ts / sentry.server.config.ts / sentry.edge.config.ts   Error monitoring (optional)
+.github/workflows/ci.yml   Type-check, lint, test, build on every push/PR
+.github/workflows/e2e.yml  Playwright, manual trigger only (unproven, see above)
 firestore.rules            Security rules for Firestore
 .env.example                Environment variable template
 ```
@@ -202,15 +208,42 @@ On top of the hardening pass, this added:
   including the auth-gated dashboard layout, on every navigation, causing a loading flash there
   for a feature that was only ever meant for the public pages.
 
+## Operational pass (admin access, CI, error monitoring, e2e)
+
+- **Dashboard Inquiries view** (`/dashboard/inquiries`) — the contact form and newsletter signup
+  were writing to Firestore with no way to read that data except the Firebase console. Now
+  there's a real view for it, but note the security model carefully: `/sign-up` is open to the
+  public, so being logged in does **not** mean being authorized to read this data.
+  `/api/dashboard/inquiries` verifies a Firebase ID token server-side *and* checks it against an
+  `ADMIN_EMAILS` allowlist (`lib/firebase-admin.ts`'s `requireAdmin`) before returning anything.
+  **You must set `ADMIN_EMAILS`** (comma-separated) for this page to show real data — without
+  it, every authenticated user gets a 403, including you.
+- **CI** (`.github/workflows/ci.yml`) — type-check, lint, test, and a full `next build` on every
+  push/PR to `main`. This is also the first time the build has been verified end-to-end anywhere
+  — the sandbox this project was developed in blocks `fonts.googleapis.com`, so `next build`
+  (which fetches fonts via `next/font` at build time) could never be confirmed there.
+- **Error monitoring** (Sentry, `sentry.*.config.ts`) — gated behind `SENTRY_DSN` /
+  `NEXT_PUBLIC_SENTRY_DSN`; a documented no-op until set, same pattern as every other optional
+  integration in this project. Wired into both error boundaries.
+- **E2E tests** (Playwright, `e2e/`) — homepage nav, command palette, dark mode persistence,
+  contact form validation. **Important:** these were authored without being able to install a
+  browser to run them (same class of sandbox network restriction as above, blocking
+  `deb.nodesource.com` this time). They're syntactically correct but unproven. That's why
+  `.github/workflows/e2e.yml` is `workflow_dispatch`-only (manually triggered from the Actions
+  tab), not wired into `ci.yml`'s automatic triggers — run `npm run test:e2e` locally first,
+  confirm it passes, and only then consider adding it to the required checks.
+
 ## Testing
 
 ```bash
 npm test
 ```
 
-38 tests across 9 suites: `FeatureCard`, `ProjectCard`, `Footer`, `TopNavBar`, `ContactForm`,
-`NewsletterForm`, `Accordion`, `ChatWidget`, and an `accessibility` suite that runs `jest-axe`
-against every public page (including async Server Components like `/about`).
+41 tests across 10 suites: `FeatureCard`, `ProjectCard`, `Footer`, `TopNavBar`, `ContactForm`,
+`NewsletterForm`, `Accordion`, `ChatWidget`, `InquiriesView`, and an `accessibility` suite that
+runs `jest-axe` against every public page (including async Server Components like `/about`).
+
+E2E tests (`npm run test:e2e`) are unproven — see the Operational pass section above.
 
 ## Deploying
 
