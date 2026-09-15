@@ -23,3 +23,10 @@ class MockIntersectionObserver implements IntersectionObserver {
 }
 
 globalThis.IntersectionObserver = MockIntersectionObserver;
+
+// jsdom also doesn't implement scrolling (it does no real layout), so
+// Element.prototype.scrollTo doesn't exist. ChatWidget calls it to auto-scroll
+// the message list — harmless no-op here, real behavior in an actual browser.
+if (!Element.prototype.scrollTo) {
+  Element.prototype.scrollTo = () => {};
+}
