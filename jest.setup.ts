@@ -1,5 +1,14 @@
 import "@testing-library/jest-dom";
 
+// jsdom doesn't implement TextEncoder/TextDecoder. The qrcode library (used
+// to generate the contact page's vCard QR code) needs it even for server-side
+// SVG string generation.
+import { TextEncoder, TextDecoder } from "util";
+
+if (!globalThis.TextEncoder) {
+  Object.assign(globalThis, { TextEncoder, TextDecoder });
+}
+
 // jsdom (Jest's default DOM test environment) doesn't implement the Fetch API by
 // design. whatwg-fetch polyfills it on top of jsdom's existing XMLHttpRequest
 // support, which — unlike undici's fetch — doesn't require Web Streams globals

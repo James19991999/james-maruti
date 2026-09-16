@@ -1,6 +1,7 @@
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
+import ContactQrCode, { generateContactQrSvg } from "@/components/ContactQrCode";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbSchema, createPageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-data";
@@ -12,7 +13,9 @@ export const metadata = createPageMetadata({
   path: "/contact",
 });
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const qrSvg = await generateContactQrSvg();
+
   return (
     <>
       <JsonLd
@@ -88,6 +91,25 @@ export default function ContactPage() {
               <p className="text-on-surface-variant text-sm pt-4 border-t border-outline-variant/20">
                 Responses typically delivered within 24-48 business hours.
               </p>
+
+              <div className="pt-4 border-t border-outline-variant/20 flex flex-col sm:flex-row md:flex-col items-start gap-6">
+                <a
+                  href="/documents/james-maruti.vcf"
+                  download
+                  className="inline-flex items-center gap-2 text-secondary font-label-mono text-label-mono hover:gap-3 transition-all"
+                >
+                  <span className="material-symbols-outlined text-sm" aria-hidden="true">
+                    contact_page
+                  </span>
+                  Save Contact (.vcf)
+                </a>
+                <div>
+                  <ContactQrCode svg={qrSvg} />
+                  <p className="font-label-mono text-[11px] text-on-surface-variant mt-2 max-w-[10rem]">
+                    Scan to save directly to your phone
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="md:col-span-3 bg-surface-container-low rounded-2xl border border-outline-variant/30 p-8">
