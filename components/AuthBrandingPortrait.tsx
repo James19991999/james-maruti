@@ -10,6 +10,8 @@ export default function AuthBrandingPortrait() {
         fill
         sizes="192px"
         className="object-cover object-top"
+        placeholder="blur"
+        blurDataURL={images.heroPortrait.blurDataURL}
         priority
       />
     </div>

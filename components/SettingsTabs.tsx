@@ -141,6 +141,10 @@ function ProfileTab() {
             fill
             sizes="160px"
             className="object-cover"
+            {...(!user?.photoURL && {
+              placeholder: "blur" as const,
+              blurDataURL: images.settingsAvatar.blurDataURL,
+            })}
           />
         </div>
         <p className="text-on-surface-variant text-xs mt-3">Recommended: 800x800px .JPG or .PNG</p>

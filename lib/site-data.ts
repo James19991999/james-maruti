@@ -485,21 +485,34 @@ export const images = {
   heroPortrait: {
     src: "/images/jymoo.jpg",
     alt: "James Maruti in a black cap, striped shirt, and puffer vest, standing outdoors.",
+    blurDataURL:
+      "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAYABADASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAAUBAwQG/8QAIxAAAQQCAQMFAAAAAAAAAAAAAQIDBBEAIRIFE2EUUZGx0f/EABYBAQEBAAAAAAAAAAAAAAAAAAIABP/EABoRAQACAwEAAAAAAAAAAAAAAAEAAgMREjH/2gAMAwEAAhEDEQA/AHDhZS1326GhaVgCgfOvvNDi1paBKtCjaTogZzM+bzigOKSByG0pPn9xjG6gGYrbVgpCaNki8zGSpXqTYSRPhx5EB1thqnSLRdDeX+kiqZSFoUFUL4+/zhhi5NeR6J//2Q==",
   },
   aboutPortrait: {
     src: "/images/jymoo.jpg",
     alt: "James Maruti in a black cap, striped shirt, and puffer vest, standing outdoors.",
+    blurDataURL:
+      "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAYABADASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAAUBAwQG/8QAIxAAAQQCAQMFAAAAAAAAAAAAAQIDBBEAIRIFE2EUUZGx0f/EABYBAQEBAAAAAAAAAAAAAAAAAAIABP/EABoRAQACAwEAAAAAAAAAAAAAAAEAAgMREjH/2gAMAwEAAhEDEQA/AHDhZS1326GhaVgCgfOvvNDi1paBKtCjaTogZzM+bzigOKSByG0pPn9xjG6gGYrbVgpCaNki8zGSpXqTYSRPhx5EB1thqnSLRdDeX+kiqZSFoUFUL4+/zhhi5NeR6J//2Q==",
   },
   signInPortrait: {
     src: "/images/jymoo.jpg",
     alt: "James Maruti in a black cap, striped shirt, and puffer vest, standing outdoors.",
+    blurDataURL:
+      "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAYABADASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAAUBAwQG/8QAIxAAAQQCAQMFAAAAAAAAAAAAAQIDBBEAIRIFE2EUUZGx0f/EABYBAQEBAAAAAAAAAAAAAAAAAAIABP/EABoRAQACAwEAAAAAAAAAAAAAAAEAAgMREjH/2gAMAwEAAhEDEQA/AHDhZS1326GhaVgCgfOvvNDi1paBKtCjaTogZzM+bzigOKSByG0pPn9xjG6gGYrbVgpCaNki8zGSpXqTYSRPhx5EB1thqnSLRdDeX+kiqZSFoUFUL4+/zhhi5NeR6J//2Q==",
   },
   termsPortrait: {
     src: "https://lh3.googleusercontent.com/aida-public/AB6AXuBenrgxkwdeDKu50FGLp8IFjSsDXEOQEjQ26PKqgYW2XgqA5TieilTqVTaPKr_Pb7D_6cmypjHKis3x2pKH_cF9IUepCsDlXU3Lef_QXZKK98iPo-Y9qf7Zl-RATxbYgUWM7mf1mrzk-ZHGWEKR4kbnHub9kcE6Xl4bZheD6Gd39QBF7NTzJV-lgYSLzqSQryR3lmRIdJfRBX4i3tl9CGiK-zt2nhBK5nJAk0YOyuv8EStFDqriPdRK7Ds8EgpfqbAGkoqyL_Tmd94",
     alt: "Architectural workspace representing the Maruti digital ecosystem.",
+    // No blurDataURL: this is still a remote image (lh3.googleusercontent.com),
+    // and generating an accurate blur placeholder needs the actual image bytes,
+    // which would mean fetching a third-party URL at build time rather than
+    // reading a local file — not done here. next/image degrades fine without
+    // one; it just skips the blur-up effect for this specific image.
   },
   settingsAvatar: {
     src: "/images/jammees.png",
     alt: "James Maruti profile photo.",
+    blurDataURL:
+      "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAQABADASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAMF/8QAIBAAAgICAQUBAAAAAAAAAAAAAQIDEQAEMRMUIVGxwf/EABQBAQAAAAAAAAAAAAAAAAAAAAX/xAAWEQADAAAAAAAAAAAAAAAAAAAAESH/2gAMAwEAAhEDEQA/AMzV1u4Eh6ixrGoYlr9gfuNnUl1ComABN1Rvg0fmTjleMMFNBxTD35v6MSTPKFDsWC3VnizeLVh8R//Z",
   },
 };

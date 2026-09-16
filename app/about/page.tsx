@@ -51,6 +51,8 @@ export default async function AboutPage() {
                 fill
                 sizes="(min-width: 1024px) 256px, 224px"
                 className="object-cover object-top"
+                placeholder="blur"
+                blurDataURL={images.heroPortrait.blurDataURL}
                 priority
               />
             </div>

@@ -82,6 +82,8 @@ export default function HomePage() {
                 fill
                 sizes="(min-width: 1024px) 420px, (min-width: 640px) 384px, 320px"
                 className="object-cover object-top"
+                placeholder="blur"
+                blurDataURL={images.heroPortrait.blurDataURL}
                 priority
               />
             </div>
@@ -175,6 +177,8 @@ export default function HomePage() {
                   width={800}
                   height={800}
                   sizes="(min-width: 1024px) 500px, 90vw"
+                  placeholder="blur"
+                  blurDataURL={images.aboutPortrait.blurDataURL}
                 />
               </div>
             </div>
