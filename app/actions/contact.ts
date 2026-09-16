@@ -1,10 +1,6 @@
 "use server";
 
 import { headers } from "next/headers";
-import { FieldValue } from "firebase-admin/firestore";
-import { getAdminDb } from "@/lib/firebase-admin";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
-import { sendInquiryNotification } from "@/lib/notifications";
 import { withTimeout } from "@/lib/with-timeout";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -37,6 +33,22 @@ async function handleContactSubmit(formData: FormData): Promise<ContactActionRes
   if (typeof message !== "string" || message.trim().length < 10) {
     return { ok: false, error: "Please share a bit more detail in the project brief." };
   }
+
+  // Dynamic imports rather than static top-of-file ones: firebase-admin (and its
+  // dependency chain) failing to LOAD at all — not just failing when called — is
+  // a real failure mode we've hit before (see the withSentryConfig incident). A
+  // static import failure happens outside any try/catch and crashes the whole
+  // action with Next's generic sanitized "error occurred in Server Components"
+  // message, which is exactly the unhelpful dead end this function exists to
+  // prevent. Importing dynamically, inside this try/catch, means a load failure
+  // is just another caught error instead of an unrecoverable one.
+  const [{ FieldValue }, { getAdminDb }, { checkRateLimit, getClientIp }, { sendInquiryNotification }] =
+    await Promise.all([
+      import("firebase-admin/firestore"),
+      import("@/lib/firebase-admin"),
+      import("@/lib/rate-limit"),
+      import("@/lib/notifications"),
+    ]);
 
   try {
     const requestHeaders = await headers();
@@ -80,10 +92,10 @@ async function handleContactSubmit(formData: FormData): Promise<ContactActionRes
 }
 
 /**
- * Outer safety net — same reasoning as the old /api/contact route: a person
- * filling out this form should always get a real, readable error, never a
- * server crash with no message at all (Server Actions surface an unhandled
- * throw as a generic "An error occurred" on the client with no detail).
+ * Outer safety net — a person filling out this form should always get a
+ * real, readable error, never Next's generic sanitized "error occurred in
+ * Server Components" message with no detail. Combined with the dynamic
+ * imports above, this now catches failures at both load time and run time.
  */
 export async function submitContact(formData: FormData): Promise<ContactActionResult> {
   try {

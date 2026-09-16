@@ -130,6 +130,24 @@ Technical Stack, Journal, Settings, Archive, Support) was only fully designed fo
 → Profile** tab in the export; the other panels ship as on-brand placeholder states rather than
 empty 404s, ready for real content/data wiring later.
 
+## Server Actions load-failure fix
+
+After the Server Actions migration, contact/newsletter submissions started showing Next's
+generic production error ("An error occurred in the Server Components render... A digest
+property is included...") instead of a specific message. Root cause: `app/actions/contact.ts`
+and `app/actions/newsletter.ts` had static top-of-file imports of `firebase-admin`-adjacent
+modules. A static import failing to *load* at all (not just failing when *called*) throws
+outside any try/catch in the file — the outer safety net added a few rounds back only covered
+runtime failures, not load-time ones. Fixed by converting those specific imports to dynamic
+`import()` calls inside the try/catch, so a load failure is now just another caught error.
+Proven with a real test (`__tests__/actions/contact.test.ts`) that simulates exactly this
+failure mode — a module whose factory throws, the same way a real broken dependency chain
+would — and confirms the action still returns a clean `{ ok: false, error: "..." }` instead of
+throwing. If this happens again, the fastest diagnostic is checking whether `SENTRY_DSN` was
+recently set: Sentry's build-time instrumentation caused a very similar class of failure once
+before (see the Operational pass section below), and Server Actions are more fragile at the
+build level than plain API routes were.
+
 ## Hardening pass (security, spam protection, a11y, PWA basics)
 
 On top of the initial build, this pass added:
@@ -281,10 +299,10 @@ On top of the hardening pass, this added:
 npm test
 ```
 
-47 tests across 11 suites: `FeatureCard`, `ProjectCard`, `Footer`, `TopNavBar`, `ContactForm`,
-`NewsletterForm`, `Accordion`, `ChatWidget`, `InquiriesView`, `with-timeout`, and an
-`accessibility` suite that runs `jest-axe` against every public page (including async Server
-Components like `/about` and `/contact`).
+50 tests across 12 suites: `FeatureCard`, `ProjectCard`, `Footer`, `TopNavBar`, `ContactForm`,
+`NewsletterForm`, `Accordion`, `ChatWidget`, `InquiriesView`, `with-timeout`, a dedicated
+`actions/contact` suite proving the dynamic-import safety net catches load-time failures, and an
+`accessibility` suite that runs `jest-axe` against every public page.
 
 E2E tests (`npm run test:e2e`) are unproven — see the Operational pass section above.
 

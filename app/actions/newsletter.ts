@@ -1,10 +1,6 @@
 "use server";
 
 import { headers } from "next/headers";
-import { FieldValue } from "firebase-admin/firestore";
-import { getAdminDb } from "@/lib/firebase-admin";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
-import { sendNewsletterConfirmation } from "@/lib/notifications";
 import { withTimeout } from "@/lib/with-timeout";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,6 +21,16 @@ async function handleNewsletterSubmit(formData: FormData): Promise<NewsletterAct
   if (typeof email !== "string" || !EMAIL_RE.test(email)) {
     return { ok: false, error: "Please provide a valid email address." };
   }
+
+  // See app/actions/contact.ts for why these are dynamic rather than static
+  // top-of-file imports.
+  const [{ FieldValue }, { getAdminDb }, { checkRateLimit, getClientIp }, { sendNewsletterConfirmation }] =
+    await Promise.all([
+      import("firebase-admin/firestore"),
+      import("@/lib/firebase-admin"),
+      import("@/lib/rate-limit"),
+      import("@/lib/notifications"),
+    ]);
 
   try {
     const requestHeaders = await headers();
