@@ -39,3 +39,19 @@ globalThis.IntersectionObserver = MockIntersectionObserver;
 if (!Element.prototype.scrollTo) {
   Element.prototype.scrollTo = () => {};
 }
+
+// Jest's transform doesn't understand the "use server" boundary the way
+// Next's real bundler does — it just imports the whole module graph behind
+// a Server Action, which for these two pulls in firebase-admin/auth, which
+// pulls in ESM-only packages (jose, jwks-rsa) Jest can't parse. Since Footer
+// (rendered on every page) contains NewsletterForm, this would otherwise
+// break nearly every test in the suite, not just the two that test these
+// forms directly. Default-mocked here, globally; ContactForm.test.tsx and
+// NewsletterForm.test.tsx each declare their own more specific jest.mock()
+// for these same modules, which takes precedence in those files.
+jest.mock("@/app/actions/contact", () => ({
+  submitContact: jest.fn().mockResolvedValue({ ok: true }),
+}));
+jest.mock("@/app/actions/newsletter", () => ({
+  submitNewsletter: jest.fn().mockResolvedValue({ ok: true }),
+}));

@@ -68,8 +68,10 @@ app/
     inquiries/page.tsx      Real contact-form/newsletter data -- see below, needs ADMIN_EMAILS
     projects/ stack/ journal/ archive/ support/   Placeholder panels (Settings is fully wired)
     settings/page.tsx       Account Settings (Profile tab is live; others are labeled "coming soon")
-  api/contact/route.ts     POST -> validates -> writes to Firestore via Admin SDK
-  api/newsletter/route.ts  POST -> validates -> upserts subscriber doc
+  actions/contact.ts       Server Action: contact form submission (replaces the old API route)
+  actions/newsletter.ts    Server Action: newsletter signup (replaces the old API route)
+  llms.txt/route.ts        GET -> /llms.txt, AI-agent-readable site summary
+  documents/james-maruti.vcf/route.ts   GET -> downloadable vCard, built from the same data as the QR code
   api/chat/route.ts        POST -> optional AI chat widget backend (see below)
   api/dashboard/inquiries/route.ts   GET -> admin-only, verified via requireAdmin()
   sitemap.ts / robots.ts / manifest.ts   Generated SEO + PWA files
@@ -78,7 +80,8 @@ app/
 components/                TopNavBar, Footer, FeatureCard, ProjectCard, ContactForm,
                             Sidebar, SignInForm, SignUpForm, SettingsTabs, MobileMenu,
                             ThemeProvider, ThemeToggle, CommandPalette(+Context/Trigger),
-                            ChatWidget, GithubActivity, Accordion, Reveal, InquiriesView
+                            ChatWidget, GithubActivity, Accordion, Reveal, InquiriesView,
+                            ContactQrCode
 lib/
   site-data.ts             All copy/content -- single source of truth for every page
   firebase.ts              Client SDK init (guarded so builds succeed without credentials)
@@ -88,6 +91,7 @@ lib/
   github.ts                GitHub GraphQL API client for the contribution graph
   rate-limit.ts            Firestore-backed rate limiter shared by contact/newsletter/chat
   notifications.ts         Optional Resend email notifications
+  vcard.ts                 Shared vCard generator used by both the .vcf route and the QR code
 public/documents/
   james-maruti-cv.pdf      Real, downloadable ATS-formatted CV generated from the site's own content
 __tests__/                 Jest + RTL unit tests
@@ -233,15 +237,54 @@ On top of the hardening pass, this added:
   tab), not wired into `ci.yml`'s automatic triggers — run `npm run test:e2e` locally first,
   confirm it passes, and only then consider adding it to the required checks.
 
+## Modern features, round 2 (llms.txt, vCard/QR, blur placeholders, more schema, Web Share, Server Actions)
+
+- **`/llms.txt`** — an emerging convention (llmstxt.org), analogous to `robots.txt`/`sitemap.xml`
+  but for AI agents/LLMs: a curated map of site content instead of making an agent crawl and
+  parse full HTML. Built from `lib/site-data.ts`, so it can't drift out of sync.
+- **vCard download + QR code** on `/contact` (`lib/vcard.ts`, `components/ContactQrCode.tsx`,
+  `/documents/james-maruti.vcf`). The QR code encodes the vCard directly (not a link to it), so
+  scanning it saves the contact straight to a phone. Generated with the `qrcode` package
+  ourselves rather than an external image-proxy API — self-contained, no third-party uptime
+  dependency. `ContactPage` had to become an async Server Component to resolve the QR SVG before
+  rendering, same pattern as `GithubActivity`.
+- **Real blur placeholders** on local images, generated with `sharp` directly from the actual
+  files (not a generic placeholder) — see `hero`/`about` portraits and the auth branding image.
+- **Expanded structured data** — `BreadcrumbList` now on every public page (was 3 of 10), plus a
+  new `Service` schema on `/services` (`serviceSchema()` in `lib/seo.ts`).
+- **Web Share API** on project cards (`components/ProjectCard.tsx`) — native share sheet where
+  supported, clipboard-copy fallback everywhere else.
+- **Contact/newsletter forms migrated to Server Actions** (`app/actions/contact.ts`,
+  `app/actions/newsletter.ts`), replacing the old fetch-based `/api/contact`/`/api/newsletter`
+  routes (removed). Same validation/honeypot/rate-limit/timeout/Firestore logic, just called
+  directly instead of over `fetch`. `lib/rate-limit.ts`'s `getClientIp()` was generalized to
+  accept any `Headers`-like object, since a Server Action only has `next/headers`'s `headers()`,
+  not a `Request`.
+  ⚠️ **Honest caveat on scope**: this installed React version (18.3.1, verified directly rather
+  than assumed) doesn't export `useFormState`/`useFormStatus`, so the forms use `useTransition`
+  instead. That preserves the exact same UX (inline validation, loading state, success/error
+  display, no regression) and still gets the "less fetch/JSON boilerplate, type-safe direct
+  call" benefit — but it does *not* achieve true zero-JS progressive enhancement with inline
+  result display, which was part of the original pitch for this migration. A future React 19 /
+  Next 15 upgrade would unlock that fully.
+- Found and fixed a real Jest gap this surfaced: importing a Server Action from a Client
+  Component works fine in Next's real bundler (which understands the `"use server"` boundary
+  and never bundles server code into the client), but Jest just imports the whole module graph —
+  which for these two pulls in `firebase-admin/auth`'s dependency chain, including ESM-only
+  packages (`jose`, `jwks-rsa`) Jest can't parse. Since `Footer` (on every page) contains
+  `NewsletterForm`, this broke nearly the whole suite, not just the two form tests. Fixed with a
+  global default mock for both actions in `jest.setup.ts`.
+
 ## Testing
 
 ```bash
 npm test
 ```
 
-41 tests across 10 suites: `FeatureCard`, `ProjectCard`, `Footer`, `TopNavBar`, `ContactForm`,
-`NewsletterForm`, `Accordion`, `ChatWidget`, `InquiriesView`, and an `accessibility` suite that
-runs `jest-axe` against every public page (including async Server Components like `/about`).
+47 tests across 11 suites: `FeatureCard`, `ProjectCard`, `Footer`, `TopNavBar`, `ContactForm`,
+`NewsletterForm`, `Accordion`, `ChatWidget`, `InquiriesView`, `with-timeout`, and an
+`accessibility` suite that runs `jest-axe` against every public page (including async Server
+Components like `/about` and `/contact`).
 
 E2E tests (`npm run test:e2e`) are unproven — see the Operational pass section above.
 

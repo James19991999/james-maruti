@@ -1,20 +1,21 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import NewsletterForm from "@/components/NewsletterForm";
+import { submitNewsletter } from "@/app/actions/newsletter";
+
+jest.mock("@/app/actions/newsletter", () => ({
+  submitNewsletter: jest.fn(),
+}));
+
+const mockedSubmitNewsletter = submitNewsletter as jest.MockedFunction<typeof submitNewsletter>;
 
 describe("NewsletterForm", () => {
-  const originalFetch = global.fetch;
-
   afterEach(() => {
-    global.fetch = originalFetch;
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   it("submits an email and shows a success state", async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ ok: true }),
-    }) as unknown as typeof fetch;
+    mockedSubmitNewsletter.mockResolvedValue({ ok: true });
 
     const user = userEvent.setup();
     render(<NewsletterForm />);
@@ -25,17 +26,17 @@ describe("NewsletterForm", () => {
     await waitFor(() => {
       expect(screen.getByText(/you're subscribed/i)).toBeInTheDocument();
     });
-    expect(global.fetch).toHaveBeenCalledWith(
-      "/api/newsletter",
-      expect.objectContaining({ method: "POST" })
-    );
+
+    expect(mockedSubmitNewsletter).toHaveBeenCalledTimes(1);
+    const submittedFormData = mockedSubmitNewsletter.mock.calls[0][0];
+    expect(submittedFormData.get("email")).toBe("reader@example.com");
   });
 
   it("surfaces a server error message", async () => {
-    global.fetch = jest.fn().mockResolvedValue({
+    mockedSubmitNewsletter.mockResolvedValue({
       ok: false,
-      json: async () => ({ error: "Please provide a valid email address." }),
-    }) as unknown as typeof fetch;
+      error: "Please provide a valid email address.",
+    });
 
     const user = userEvent.setup();
     render(<NewsletterForm />);

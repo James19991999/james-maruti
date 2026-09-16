@@ -1,9 +1,10 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useState, useTransition, type FormEvent } from "react";
 import { inquiryTypes } from "@/lib/site-data";
+import { submitContact } from "@/app/actions/contact";
 
-type Status = "idle" | "submitting" | "success" | "error";
+type Status = "idle" | "success" | "error";
 
 interface ContactFormProps {
   /** Compact variant omits the inquiry-type select, used in the homepage CTA card. */
@@ -13,47 +14,43 @@ interface ContactFormProps {
 export default function ContactForm({ compact = false }: ContactFormProps) {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isPending, startTransition] = useTransition();
   const formId = useId();
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus("submitting");
+    setStatus("idle");
     setErrorMessage("");
 
     const form = event.currentTarget;
     const data = new FormData(form);
-    const payload = {
-      name: data.get("name")?.toString().trim() ?? "",
-      email: data.get("email")?.toString().trim() ?? "",
-      inquiryType: data.get("inquiryType")?.toString() ?? "",
-      message: data.get("message")?.toString().trim() ?? "",
-      website: data.get("website")?.toString() ?? "", // honeypot — see below
-    };
+    const name = data.get("name")?.toString().trim() ?? "";
+    const email = data.get("email")?.toString().trim() ?? "";
+    const message = data.get("message")?.toString().trim() ?? "";
 
-    if (!payload.name || !payload.email || !payload.message) {
+    if (!name || !email || !message) {
       setStatus("error");
       setErrorMessage("Please fill in your name, email, and project brief.");
       return;
     }
 
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const body = await response.json().catch(() => null);
-        throw new Error(body?.error ?? `Something went wrong (status ${response.status}). Please try again.`);
+    startTransition(async () => {
+      try {
+        const result = await submitContact(data);
+        if (!result.ok) {
+          setStatus("error");
+          setErrorMessage(result.error ?? "Something went wrong. Please try again.");
+          return;
+        }
+        setStatus("success");
+        form.reset();
+      } catch (err) {
+        setStatus("error");
+        setErrorMessage(
+          err instanceof Error ? err.message : "Something went wrong. Please try again."
+        );
       }
-
-      setStatus("success");
-      form.reset();
-    } catch (err) {
-      setStatus("error");
-      setErrorMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
-    }
+    });
   }
 
   if (status === "success") {
@@ -76,7 +73,7 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       {/* Honeypot: hidden from real visitors (off-screen, not tabbable, not announced),
-          but a form-filling bot will populate it. See app/api/contact/route.ts. */}
+          but a form-filling bot will populate it. See app/actions/contact.ts. */}
       <div className="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
         <label htmlFor={`${formId}-website`}>Website</label>
         <input
@@ -175,11 +172,11 @@ export default function ContactForm({ compact = false }: ContactFormProps) {
 
       <button
         type="submit"
-        disabled={status === "submitting"}
+        disabled={isPending}
         className="w-full bg-primary text-on-primary px-6 py-3.5 rounded-lg font-label-mono text-label-mono hover:bg-primary-container transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 inline-flex items-center justify-center gap-2"
       >
-        {status === "submitting" ? "Sending…" : "Send Inquiry"}
-        {status !== "submitting" && (
+        {isPending ? "Sending…" : "Send Inquiry"}
+        {!isPending && (
           <span className="material-symbols-outlined text-sm" aria-hidden="true">
             arrow_forward
           </span>

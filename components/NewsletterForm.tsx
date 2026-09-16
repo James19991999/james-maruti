@@ -1,23 +1,24 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useId, useState, useTransition, type FormEvent } from "react";
+import { submitNewsletter } from "@/app/actions/newsletter";
 
-type Status = "idle" | "submitting" | "success" | "error";
+type Status = "idle" | "success" | "error";
 
 export default function NewsletterForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isPending, startTransition] = useTransition();
   const formId = useId();
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus("submitting");
+    setStatus("idle");
     setErrorMessage("");
 
     const form = event.currentTarget;
     const data = new FormData(form);
     const email = data.get("email")?.toString().trim() ?? "";
-    const website = data.get("website")?.toString() ?? ""; // honeypot
 
     if (!email) {
       setStatus("error");
@@ -25,24 +26,23 @@ export default function NewsletterForm() {
       return;
     }
 
-    try {
-      const response = await fetch("/api/newsletter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, website }),
-      });
-
-      if (!response.ok) {
-        const body = await response.json().catch(() => null);
-        throw new Error(body?.error ?? `Something went wrong (status ${response.status}). Please try again.`);
+    startTransition(async () => {
+      try {
+        const result = await submitNewsletter(data);
+        if (!result.ok) {
+          setStatus("error");
+          setErrorMessage(result.error ?? "Something went wrong. Please try again.");
+          return;
+        }
+        setStatus("success");
+        form.reset();
+      } catch (err) {
+        setStatus("error");
+        setErrorMessage(
+          err instanceof Error ? err.message : "Something went wrong. Please try again."
+        );
       }
-
-      setStatus("success");
-      form.reset();
-    } catch (err) {
-      setStatus("error");
-      setErrorMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
-    }
+    });
   }
 
   if (status === "success") {
@@ -73,10 +73,10 @@ export default function NewsletterForm() {
         />
         <button
           type="submit"
-          disabled={status === "submitting"}
+          disabled={isPending}
           className="shrink-0 bg-primary text-on-primary px-4 py-2 rounded-lg font-label-mono text-[11px] hover:bg-primary-container transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {status === "submitting" ? "…" : "Subscribe"}
+          {isPending ? "…" : "Subscribe"}
         </button>
       </div>
       {/* Honeypot */}
