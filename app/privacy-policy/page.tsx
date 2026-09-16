@@ -1,7 +1,8 @@
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 
-import { createPageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, createPageMetadata } from "@/lib/seo";
 
 export const metadata = createPageMetadata({
   title: "Privacy Policy",
@@ -64,6 +65,12 @@ const rights = [
 export default function PrivacyPolicyPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "" },
+          { name: "Privacy Policy", path: "/privacy-policy" },
+        ])}
+      />
       <TopNavBar />
       <main className="pt-24 overflow-x-hidden animate-page-fade-in">
         <section className="px-gutter md:px-margin-desktop py-section-gap">

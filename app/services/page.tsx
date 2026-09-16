@@ -3,7 +3,7 @@ import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 import FeatureCard from "@/components/FeatureCard";
 import JsonLd from "@/components/JsonLd";
-import { breadcrumbSchema, createPageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, createPageMetadata, serviceSchema } from "@/lib/seo";
 import { serviceMethodologySteps, serviceStack, services } from "@/lib/site-data";
 
 export const metadata = createPageMetadata({
@@ -22,6 +22,7 @@ export default function ServicesPage() {
           { name: "Services", path: "/services" },
         ])}
       />
+      <JsonLd data={serviceSchema(services)} />
       <TopNavBar />
       <main className="pt-24 overflow-x-hidden animate-page-fade-in">
         <section className="px-gutter md:px-margin-desktop py-section-gap">

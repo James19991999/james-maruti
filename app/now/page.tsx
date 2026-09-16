@@ -1,7 +1,8 @@
 import Link from "next/link";
 import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
-import { createPageMetadata } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbSchema, createPageMetadata } from "@/lib/seo";
 import { experienceEntries, expertiseAreas, siteConfig } from "@/lib/site-data";
 
 export const metadata = createPageMetadata({
@@ -15,6 +16,12 @@ const currentRole = experienceEntries[0];
 export default function NowPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "" },
+          { name: "Now", path: "/now" },
+        ])}
+      />
       <TopNavBar />
       <main className="pt-24 overflow-x-hidden animate-page-fade-in">
         <section className="px-gutter md:px-margin-desktop py-section-gap">

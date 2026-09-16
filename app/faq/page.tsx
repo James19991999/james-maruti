@@ -3,7 +3,7 @@ import TopNavBar from "@/components/TopNavBar";
 import Footer from "@/components/Footer";
 import Accordion from "@/components/Accordion";
 import JsonLd from "@/components/JsonLd";
-import { createPageMetadata } from "@/lib/seo";
+import { breadcrumbSchema, createPageMetadata } from "@/lib/seo";
 import { faqs } from "@/lib/site-data";
 
 export const metadata = createPageMetadata({
@@ -30,6 +30,12 @@ export default function FaqPage() {
   return (
     <>
       <JsonLd data={faqSchema} />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "" },
+          { name: "FAQ", path: "/faq" },
+        ])}
+      />
       <TopNavBar />
       <main className="pt-24 overflow-x-hidden animate-page-fade-in">
         <section className="px-gutter md:px-margin-desktop py-section-gap">

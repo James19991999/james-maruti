@@ -58,3 +58,25 @@ export function breadcrumbSchema(items: { name: string; path: string }[]) {
     })),
   };
 }
+
+export function serviceSchema(items: { title: string; description: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "Service",
+      position: index + 1,
+      name: item.title,
+      description: item.description,
+      provider: {
+        "@type": "Person",
+        name: siteConfig.name,
+        url: siteConfig.url,
+      },
+      areaServed: {
+        "@type": "Country",
+        name: "Worldwide",
+      },
+    })),
+  };
+}
