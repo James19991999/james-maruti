@@ -46,11 +46,22 @@ export async function checkRateLimit(identifier: string, bucket: string): Promis
   });
 }
 
-/** Best-effort client IP extraction behind common proxy/CDN setups (Vercel included). */
-export function getClientIp(request: Request): string {
-  const forwardedFor = request.headers.get("x-forwarded-for");
+/** Minimal shape both Request.headers and next/headers' headers() satisfy. */
+interface HeadersLike {
+  get(name: string): string | null;
+}
+
+/**
+ * Best-effort client IP extraction behind common proxy/CDN setups (Vercel
+ * included). Accepts a plain Headers-like object rather than a full Request
+ * so it works from both API routes (request.headers) and Server Actions,
+ * which only have next/headers' headers() to work with — there's no Request
+ * object inside a "use server" function.
+ */
+export function getClientIp(headers: HeadersLike): string {
+  const forwardedFor = headers.get("x-forwarded-for");
   if (forwardedFor) return forwardedFor.split(",")[0].trim();
-  const realIp = request.headers.get("x-real-ip");
+  const realIp = headers.get("x-real-ip");
   if (realIp) return realIp;
   return "unknown";
 }

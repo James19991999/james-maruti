@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const ip = getClientIp(request);
+    const ip = getClientIp(request.headers);
     const { allowed, retryAfterSeconds } = await checkRateLimit(ip, "chat");
     if (!allowed) {
       return NextResponse.json(
