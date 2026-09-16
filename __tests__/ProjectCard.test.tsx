@@ -1,7 +1,13 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import ProjectCard from "@/components/ProjectCard";
 
 describe("ProjectCard", () => {
+  afterEach(() => {
+    Object.defineProperty(navigator, "share", { value: undefined, configurable: true });
+    Object.defineProperty(navigator, "clipboard", { value: undefined, configurable: true });
+  });
+
   it("renders project details and an internal link without target=_blank", () => {
     render(
       <ProjectCard
@@ -54,5 +60,76 @@ describe("ProjectCard", () => {
     expect(screen.queryByRole("link", { name: /view project/i })).not.toBeInTheDocument();
     const button = screen.getByRole("button", { name: /coming soon/i });
     expect(button).toBeDisabled();
+  });
+
+  it("does not render a share button for coming-soon projects (nothing real to share yet)", () => {
+    render(
+      <ProjectCard
+        title="PULSE"
+        category="Fitness Tracker SaaS"
+        description="Built with Next.js and Stripe."
+        tags={["Web App"]}
+        href=""
+        external={false}
+        comingSoon
+      />
+    );
+    expect(screen.queryByRole("button", { name: /share/i })).not.toBeInTheDocument();
+  });
+
+  it("uses navigator.share when available", async () => {
+    const shareMock = jest.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "share", { value: shareMock, configurable: true });
+
+    const user = userEvent.setup();
+    render(
+      <ProjectCard
+        title="EduConnect"
+        category="Education SaaS"
+        description="School management portal."
+        tags={["SaaS"]}
+        href="https://edu-connect-prod-six.vercel.app"
+        external
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /share educonnect/i }));
+
+    await waitFor(() => {
+      expect(shareMock).toHaveBeenCalledWith({
+        title: "EduConnect",
+        text: "School management portal.",
+        url: "https://edu-connect-prod-six.vercel.app",
+      });
+    });
+  });
+
+  it("falls back to copying the link when navigator.share isn't available", async () => {
+    // userEvent.setup() installs its own navigator.clipboard stub for its
+    // copy/paste helpers — defining ours BEFORE calling setup() would get
+    // silently overwritten, so setup() has to run first.
+    const user = userEvent.setup();
+    const writeTextMock = jest.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: writeTextMock },
+      configurable: true,
+    });
+
+    render(
+      <ProjectCard
+        title="EduConnect"
+        category="Education SaaS"
+        description="School management portal."
+        tags={["SaaS"]}
+        href="https://edu-connect-prod-six.vercel.app"
+        external
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /share educonnect/i }));
+
+    await waitFor(() => {
+      expect(writeTextMock).toHaveBeenCalledWith("https://edu-connect-prod-six.vercel.app");
+    });
   });
 });
